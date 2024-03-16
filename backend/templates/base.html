@@ -5,21 +5,56 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
 <body>
-    <div class="full-body-container">
-        <div class="top-text">
-            <div class="google-colors">
-                <h1 id="google-4">4</h1>
-                <h1 id="google-3">3</h1>
-                <h1 id="google-0-1">0</h1>
-                <h1 id="google-0-2">0</h1>
-            </div>
-            <div class="input-box" onclick="sendFocus()">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Search for a Keeping up with the Kardashians episode" id="filter-text-val" onkeyup="filterText()">
-            </div>
-        </div>
-        <div id="answer-box">
 
+    <div class="full-body-container">
+        <div class="header">
+            <h1 class="title"> WebSync </h1>
+            <h4 class="blue"> Find FanFictions that match your favorite Web Novels!</h4>
+        </div>
+        <div class="main-container">
+                <div class="search-container">
+                    <div class="input-group" onClick="sendFocus('web-novel-search')">
+                        <label>
+                            Web Novel:
+                        </label>
+                        <div class="horizontal">
+                            <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
+                            <input class="search-bar" id="web-novel-search" onkeyup="filterText('web-novel-search')"></input>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Tags:
+                        </label>
+                        <div class="horizontal">
+                            <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image"/>
+                            <input class="search-bar" id="tags-search"></input>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>
+                            Popularity: 
+                        </label>
+                        <div id="slideContainer">
+                            <div id="sliderValue">350</div>
+                            <input type="range" min="350" max="600" value="1" id="size-slider">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="results-title-container">
+                    <div class="results-title">
+                        Results
+                    </div>
+                </div>
+                <div class="results-container">
+                    
+                    <div id="answer-box">
+
+                    </div>
+                </div>
         </div>
     </div>
 
@@ -33,14 +68,14 @@
             </div>`
         }
 
-        function sendFocus(){
-            document.getElementById('filter-text-val').focus()
+        function sendFocus(id){
+            document.getElementById(id).focus()
         }
 
-        function filterText(){
+        function filterText(id){
             document.getElementById("answer-box").innerHTML = ""
-            console.log(document.getElementById("filter-text-val").value)
-            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+            console.log(document.getElementById(id).value)
+            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById(id).value }).toString())
             .then((response) => response.json())
             .then((data) => data.forEach(row => {
                 
@@ -48,7 +83,6 @@
                 tempDiv.innerHTML = answerBoxTemplate(row.title,row.descr,row.imdb_rating)
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
-
         }
             
     </script>
