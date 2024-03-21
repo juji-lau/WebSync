@@ -1,0 +1,85 @@
+.small-image {
+    height: 20px;
+    width: 20px;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: start;
+}
+
+.main-container {
+    background-color: antiquewhite;
+    height: 90%;
+    display: block;
+}
+
+.title-container {
+    top: 20%;
+    right: 30%;
+    position:absolute;
+    width: 40%;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-container {
+   top: 40%;
+   right: 40%;
+   width:20%;
+   position: absolute;
+   display: flex;
+   flex-direction: column;
+   justify-content: start;
+   align-items: center;
+}
+
+.horizontal {
+    padding: 10px;
+    background-color: lightgray;
+    border-radius: 4px;
+    box-shadow: inset;
+    display: flex;
+    gap: 10px;
+    width: 200px;
+}
+
+#button-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    gap: 0px;
+    width: 200px;
+    overflow: clip;
+}
+
+.title-button {
+    width: 100%;
+    height: 20px;
+    overflow: clip;
+}
+
+.next {
+    top: 70%;
+    position: absolute;
+    width: 10%;
+    left: 45%;
+}
+
+footer {
+    background-color: black;
+    width: 100%;
+    height: 10%;
+}
+

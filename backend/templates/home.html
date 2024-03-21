@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+    <title>{% block title %}{% endblock %} - Flaskr</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home-style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+    <body>
+        <div class="main-container">
+            <div class="title-container">
+                <h1 class="title"> WebSync </h1>
+                <h4 class="description"> Find FanFictions that match your favorite Web Novels!</h4>
+            </div>
+            <div class="search-container">
+                <div class="input-group" onClick="sendFocus('web-novel-search')">
+                    <label>
+                            Choose a Web Novel:
+                    </label>
+                    <div class="horizontal">
+                        <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
+                        <input class="search-bar" id="web-novel-search" onkeyup="filterText('web-novel-search')"></input>
+                    </div>
+                </div>
+                <div id="button-box"></div>
+                <div id="selected-title"></div>
+            </div>
+            <a href="results" class="next">
+                <button> Next </button>
+            </a>
+        </div>
+        <footer></footer>
+
+        <script>
+            
+            function titleButtonTemplate(title){
+                let titleButton = document.createElement('button');
+                titleButton.textContent = title;
+                titleButton.setAttribute("class","title-button")
+                titleButton.addEventListener("click", titleButtonEventListener)
+                console.log(titleButton)
+                return titleButton;
+            }
+
+            function titleButtonEventListener(e){
+                fetch("/setNovel?"+new URLSearchParams({ title: e.target.textContent}).toString())
+                .then((response) => response.json())
+                .then((data) => {
+                    titleContainer = document.getElementById("selected-title")
+                    titleContainer.textContent = data['title']
+                })
+            }
+            function filterText(id){
+                var count = 0;
+                document.getElementById("button-box").innerHTML = ""
+                console.log(new URLSearchParams({ title: document.getElementById(id).value }).toString())
+                fetch("/episodes?" + new URLSearchParams({ title: document.getElementById(id).value }).toString())
+                .then((response) => response.json())
+                .then((data) => data.forEach(row => {
+                    if (count < 5){
+                        document.getElementById("button-box").appendChild(titleButtonTemplate(row.title[0]))
+                        count++;
+                    }else{
+                        return;
+                    }
+                }));
+            }
+
+            function sendFocus(id){
+                document.getElementById(id).focus()
+            }
+
+        </script>
+    </body>
+</html>
