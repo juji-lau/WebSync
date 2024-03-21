@@ -9,23 +9,27 @@
         <div class="main-container">
             <div class="title-container">
                 <h1 class="title"> WebSync </h1>
-                <h4 class="description"> Find FanFictions that match your favorite Web Novels!</h4>
+                <h4 class="description"> find fan fictions that match your favorite web novels!</h4>
+            </div>
+            <div class="selected-novel-group">
+                    <h4> Selected novel: </h4>
+                    <div id="selected-title"></div>
             </div>
             <div class="search-container">
+
                 <div class="input-group" onClick="sendFocus('web-novel-search')">
-                    <label>
-                            Choose a Web Novel:
-                    </label>
                     <div class="horizontal">
                         <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
                         <input class="search-bar" id="web-novel-search" onkeyup="filterText('web-novel-search')"></input>
                     </div>
                 </div>
                 <div id="button-box"></div>
-                <div id="selected-title"></div>
+                
             </div>
             <a href="results" class="next">
-                <button> Next </button>
+                <button class="next-button"> 
+                    <img src="{{ url_for('static', filename='images/rightarrow.svg') }}" class="arrow small-icon black-icon" /> 
+                </button>
             </a>
         </div>
         <footer></footer>
@@ -47,6 +51,9 @@
                 .then((data) => {
                     titleContainer = document.getElementById("selected-title")
                     titleContainer.textContent = data['title']
+                    let input = document.getElementById('web-novel-search')
+                    input.value = ""
+                    filterText('web-novel-search')
                 })
             }
             function filterText(id){

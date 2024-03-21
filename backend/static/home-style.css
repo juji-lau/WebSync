@@ -1,3 +1,8 @@
+@font-face {
+    font-family: shoreline-font;
+    src: url(Shoreline.otf);
+  }
+
 .small-image {
     height: 20px;
     width: 20px;
@@ -15,10 +20,26 @@ body {
     justify-content: start;
 }
 
+.description {
+    font-family: shoreline-font;
+    font-size: 25px;
+    text-align: center;
+}
+
 .main-container {
     background-color: antiquewhite;
     height: 90%;
     display: block;
+}
+
+.title {
+    top: 50%;
+    transform: translateY(-60%);
+    font-family: "Noteworthy";
+    font-size: 50px;
+    font-weight: 600;
+    text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.75);
+    line-height: 0;
 }
 
 .title-container {
@@ -34,7 +55,7 @@ body {
 }
 
 .search-container {
-   top: 40%;
+   top: 50%;
    right: 40%;
    width:20%;
    position: absolute;
@@ -42,11 +63,24 @@ body {
    flex-direction: column;
    justify-content: start;
    align-items: center;
+   text-align: center;
+}
+
+.selected-novel-group {
+    top: 40%;
+    right: 30%;
+    width: 40%;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: 'Kanit', sans-serif;
 }
 
 .horizontal {
     padding: 10px;
-    background-color: lightgray;
     border-radius: 4px;
     box-shadow: inset;
     display: flex;
@@ -54,27 +88,77 @@ body {
     width: 200px;
 }
 
+.search-bar{
+    background:none;
+    border-width: 0px 0px 3px 0px;
+}
+
+.search-bar:focus {
+    outline: none;
+    background:none;
+    border-width: 0px 0px 3px 0px;
+}
+
 #button-box {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: start;
-    gap: 0px;
+    gap: 5px;
     width: 200px;
-    overflow: clip;
+    overflow: hidden;
+    max-height: 5px;
+    transition: max-height 0.75s;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+#button-box:hover {
+    max-height: 200px;
+    transition: max-height 0.75s;
 }
 
 .title-button {
     width: 100%;
     height: 20px;
     overflow: clip;
+    background:none;
+    border-style:none;
+    font-family: 'Kanit', sans-serif;
 }
 
+.title-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
 .next {
     top: 70%;
     position: absolute;
     width: 10%;
     left: 45%;
+    background:none;
+}
+
+.next-button {
+    border-style:none;
+    background:none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.arrow {
+    border-radius: 30px;
+    width: 40px;
+    height: 40px;
+    transition: 0.5s;
+}
+
+.arrow:hover {
+    background-color: aliceblue;
+    transform: translateY(-3px);
+    transform: translateX(-3px);
+    width: 46px;
+    height: 46px;
+    transition: 0.5s;
 }
 
 footer {
