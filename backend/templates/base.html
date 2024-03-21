@@ -47,10 +47,13 @@
                     </label>
                     <div class="horizontal">
                         <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
-                        <input class="search-bar" id="tags-search"></input>
+                        <input class="search-bar" id="tags-search">
+                            <button id="add-tag-button"> + </button>
+                        </input>
+                        
                     </div>
                 </div>
-
+                <div class="tags-container"></div>
                 <div class="input-group">
                     <label>
                         Popularity:
@@ -69,6 +72,28 @@
         </div>
 
         <script>
+
+            function addTag(e){
+                let inputTag = document.getElementById('tags-search').value;
+                
+                let tagContainer = document.querySelector('.tags-container');
+
+                let newTag = document.createElement('div');
+                newTag.setAttribute("class","tag");
+                let tagName = document.createElement('div');
+                tagName.setAttribute("class","tag-name");
+                tagName.textContent = inputTag;
+                newTag.appendChild(tagName);
+                let deleteButton = document.createElement('button');
+                deleteButton.setAttribute("class","delete-button");
+                deleteButton.setAttribute('id',inputTag)
+                deleteButton.textContent = "x";
+                deleteButton.addEventListener('click', () => {
+                    tagContainer.removeChild(newTag);
+                });
+                newTag.appendChild(deleteButton);
+                tagContainer.appendChild(newTag);
+            }
             function setup(){
                 fetch("/getNovel?")
                 .then((response)=> response.json())
@@ -76,6 +101,8 @@
                     titleContainer = document.getElementById("selected-title")
                     titleContainer.textContent = data['title']
                 })
+                let addTagButton = document.getElementById('add-tag-button');
+                addTagButton.addEventListener('click', addTag);
             }
             function answerBoxTemplate(title, titleDesc, rating) {
                 return `<div class=''>

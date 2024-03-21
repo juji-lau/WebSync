@@ -221,3 +221,24 @@ label {
     padding: 2px;
 
 }
+
+.tags-container {
+    width: 80%;
+    overflow:wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-row: inherit;
+    justify-content: start;
+    align-items: center;
+    gap: 20px;
+}
+
+.tag {
+    background-color: #FFE8E8;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 10px;
+    align-items: center;
+    padding: 5px;
+}
