@@ -13,7 +13,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
 # Specify the path to the JSON file relative to the current script
-json_file_path = os.path.join(current_directory, 'novel_info.json')
+novel_json_file_path = os.path.join(current_directory, 'novel_info.json')
 
 
 
@@ -24,37 +24,32 @@ def getKeyInfo(data,key):
     return lst
 
 # Assuming your JSON data is stored in a file named 'init.json'
-with open(json_file_path, 'r') as file:
-    data = np.array(json.load(file))
-    titles = getKeyInfo(data,'titles')
-    descriptions = getKeyInfo(data,'description')
-    title_to_index = {}
-    for i in range (len(titles)):
-        title_to_index[titles[i][0]] = i
+with open(novel_json_file_path, 'r') as file:
+    novel_data = np.array(json.load(file))
+    novel_titles = getKeyInfo(novel_data,'titles')
+    novel_descriptions = getKeyInfo(novel_data,'description')
+    novel_title_to_index = {}
+    for i in range (len(novel_titles)):
+        novel_title_to_index[novel_titles[i][0]] = i
 
 app = Flask(__name__)
 
 app.secret_key = 'BAD_SECRET_KEY'
 CORS(app)
 
-selectedTitleIndex = None
-
 def json_search(query):
     matches = []
-    for i in range (len(titles)):
-        if query.lower() in titles[i][0].lower() and query != "":
-            matches.append({'title': titles[i],'descr':descriptions[i]})
-    print(str(selectedTitleIndex) + "hi")
+    for i in range (len(novel_titles)):
+        if query.lower() in novel_titles[i][0].lower() and query != "":
+            matches.append({'title': novel_titles[i],'descr':novel_descriptions[i]})
     return matches
 
 @app.route("/")
 def home():
-    print(selectedTitleIndex)
     return render_template('home.html',title="sample html")
 
 @app.route("/results/")
 def results():
-    print(selectedTitleIndex)
     return render_template('base.html',title="sample html")
 
 @app.route("/episodes")
@@ -65,16 +60,13 @@ def episodes_search():
 @app.route("/setNovel")
 def setNovel():
     selectedNovel = request.args.get("title")
-    print("Novel: " + selectedNovel)
-    session['title-index'] = title_to_index[selectedNovel]
-    print("Index: " + str(selectedTitleIndex))
+    session['title-index'] = novel_title_to_index[selectedNovel]
     returnDict = {'title': selectedNovel}
     return returnDict
 
 @app.route("/getNovel")
 def getNovel():
-    print(selectedTitleIndex)
-    returnDict = {'title': titles[session['title-index']]}
+    returnDict = {'title': novel_titles[session['title-index']]}
     return returnDict
 
 if 'DB_NAME' not in os.environ:
