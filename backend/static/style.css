@@ -12,29 +12,74 @@
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: start;
     align-items: center;
     flex-direction: column;
-    background-color: #d8e0f4;
+    background-color: purple;
+    /*background-color: #d8e0f4;*/
     z-index: -1;
 }
 
-.header {
-    width: 100%;
+.search-container {
     display: flex;
+    left: 0%;
+    top: 25%;
+    width: 40%;
+    height: 75%;
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    position: fixed;
+    border-style: solid;
+    border-width: 7px 0 0 0;
+    border-color: #717171;
+
+    background-image: url(https://images.app.goo.gl/yw5UYuDGdxEs6a7t6), url(https://i.pinimg.com/236x/36/c3/a6/36c3a697fe6e6fc6d84713569732ebfb.jpg);
+    background-size: cover;
+    background-position: bottom, bottom;
+    background-repeat: no-repeat, no-repeat;
+    background-position-x: 0;
+    background-position-y: 0;
+    /*resize: horizontal;*/
+}
+
+.results-container {
+    display: flex;
+    left: 40%;
+    top: 25%;
+    width: 60%;
+    height: 75%;
+    background-color: #d8e0f4;
+    z-index: 1;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    position: fixed;
+    border-style: solid;
+    border-width: 7px 0px 0px 0px;
+    border-color: #717171;
+    overflow: scroll;
+    /*resize: horizontal;*/
+
+}
+
+.header-container {
+    display: flex;
+    width: 100%;
+    height: 25%;
+    z-index: 1;
     flex-direction: column;
     align-self: stretch;
     background-color: #FFE8E8;
     justify-content: center;
     align-items: center;
-    height: 25%;
     position: fixed;
-    z-index: 1;
     border-bottom: 7px #717171;
-    border-width: 100vw;
+    border-width: 100%;
 }
 
 .title {
@@ -51,50 +96,18 @@
 }
 
 .subtitle {
+    position: relative;
     flex-grow: 1;
     flex-shrink: 4;
     font-size: 14px;
     font-weight: 30;
     color: #11397b;
-    padding-bottom: 10px;
+    padding-bottom: 20px;
     text-align: center;
     font-family: "Comic Sans MS";
     margin-top: -35px;
     z-index: 3;
 }
-
-.main-container {
-    height: 75%;
-    display: flex;
-    justify-content: start;
-    position: absolute;
-    top: 20%;
-    width: 100%;
-}
-
-
-.search-container {
-    width: 40vw;
-    height: 75vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    position: fixed;
-    z-index: 0;
-    border-style: solid;
-    border-width: 7px 0 0 0;
-    border-color: #717171;
-
-    background-image: url(https://images.app.goo.gl/yw5UYuDGdxEs6a7t6), url(https://i.pinimg.com/236x/36/c3/a6/36c3a697fe6e6fc6d84713569732ebfb.jpg);
-    background-size: cover;
-    background-position: bottom, bottom;
-    background-repeat: no-repeat, no-repeat;
-    background-position-x: 0;
-    background-position-y: 0;
-    /*padding: 15px;*/
-}
-
 
 .input-group {
     display: flex;
@@ -114,22 +127,6 @@ label {
     justify-content: space-between;
 }
 
-.results-container {
-    width: 60%;
-    right: 0;
-    background-color: #d8e0f4;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
-    position: absolute;
-    height: 75;
-    overflow: scroll;
-    border-style: solid;
-    border-width: 7px 0 0 0;
-    border-color: #717171;
-    z-index: -2;
-}
 
 .small-image {
     height: 20px;
@@ -137,14 +134,12 @@ label {
 }
 
 .results-title-container {
-    position: absolute;
-    z-index: -1;
-    width: 60%;
-    top: 7%;
+    position: fixed;
     left: 40%;
+    width: 60%;
+    z-index: 1;
     border-style: solid;
-    border-width: 7px 3px 3px 3px;
-    border-top-color: #717171;
+    border-width: 0px 3px 3px 3px;
     border-right-color: #555555;
     border-left-color: #555555;
     border-bottom-color: #555555;
@@ -154,6 +149,7 @@ label {
 
 .results-title {
     height: 50%;
+    z-index: -1;
     align-self: stretch;
     background-color: lightgray;
     text-align: center;
@@ -173,15 +169,28 @@ label {
     gap: 10px;
 }
 
+.single-container {
+    display: flex;
+}
+
 #answer-box {
-    width: 700px;
+    display: grid;
+    width: 95%;
+    left: 10%;
     margin-top: 50px;
+    color: green;
+    overflow: scroll;
 }
 
 .episode-title {
     font-family: 'Kanit', sans-serif;
+    color: black;
+    font-size: medium;
 }
 
 .episode-desc {
     font-family: 'Montserrat', sans-serif;
+    color: darkslategray;
+    font-size: small;
+
 }
