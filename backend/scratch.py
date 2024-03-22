@@ -339,7 +339,7 @@ def compute_cossim_for_webnovel(
     results, list of tuples (score, fanfic_index)
         Sorted list of results such that the first element has
         the highest score, and `fanfic_index` points to the fanfic
-        with the highest score.
+        with the highest score. Only the first ten. 
 
     """
     webnovel_unique_toks = list(set(webnovel_toks))
@@ -359,7 +359,7 @@ def compute_cossim_for_webnovel(
     for doc in doc_scores:
       cossim.append((doc_scores[doc]/norms[doc], doc))
 
-    result = sorted(cossim, key=lambda x: x[0], reverse=True)
+    result = sorted(cossim, key=lambda x: x[0], reverse=True)[:10]
     return result
     
 
@@ -380,20 +380,29 @@ def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_nor
         The key is a webnovel_index and the value is a ranked list of cosine similarity (cos sim score, fanfic_index)
     """
     webnovel_sims = {} # key - webnovel id, value = list of sorted fanfics by similarity (cos sim score, fanfic index)
+    n_webnovels = len(webnovels_tokenized)
 
-    for i in tqdm(range(len(webnovels_tokenized))):
+    for i in tqdm(range(n_webnovels)):
         webnovel = webnovels_tokenized[i]
         cossims = input_get_sims_method(webnovel['tokenized_description'], fanfic_inv_index, fanfic_idf, fanfic_norms, score_func)
         webnovel_sims[webnovel['index']] = cossims
 
-    return webnovel_sims
+        if i == int(n_webnovels/2):
+            final_dictionary = {'cossims':cossims}
+            file = 'cossim1.json'
+            with open(file, 'w', encoding='utf-8') as f:
+                json.dump({'cossims': webnovel_sims}, f)
+            webnovel_sims = {} # this line is here because otherwise computers with less than 16GB memory 
+    
+    file = 'cossim2.json'
+    with open(file, 'w', encoding='utf-8') as f:
+        json.dump({'cossims':webnovel_sims}, f)
 
 def main():
     fanfics = get_fanfic_data()
     webnovels = get_webnovel_data()
 
     n_fanfics = len(fanfics)
-    n_webnovels = len(webnovels)
 
     fanfics_tokenized = tokenize_fanfics(tokenize, fanfics)
     webnovels_tokenized = tokenize_webnovels(tokenize, webnovels)
@@ -402,7 +411,7 @@ def main():
     fanfic_idf = compute_idf(fanfic_inverted_index, n_fanfics)
     fanfic_norms = compute_doc_norms(fanfic_inverted_index, fanfic_idf, n_fanfics)
 
-    cossims = build_sims_cos(webnovels_tokenized, fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
+    cossims = build_sims_cos(webnovels_tokenized[:5], fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
 
     # # Some Example Code
     # print("Web Novel")
@@ -423,10 +432,9 @@ def main():
 
     # index_to_fanfic_id and fanfic_id_to_index might not be necessary; look at previus example to see why
 
-    final_dictionary = {'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'fanfic_id_to_index':fic_id_to_index,'index_to_webnovel_title':index_to_wn_title, 'webnovel_title_to_index':wn_title_to_index, 'fanfic_list':fanfics, 'webnovel_list':webnovels}
     file = 'webnovel_to_fanfic_cossim.json'
     with open(file, 'w', encoding='utf-8') as f:
-        json.dump(cossims, f)
+        json.dump({'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'fanfic_id_to_index':fic_id_to_index, 'fanfics':fanfics}, f)
 
 if __name__ == "__main__":
     main()
