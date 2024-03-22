@@ -21,6 +21,9 @@
                         Results
                     </div>
                 </div>
+                <div class="answer-title">
+                    Answers
+                </div>
                 <div id="answer-box">
                 </div>
                 <div class="bottom-button-containers">
@@ -76,6 +79,7 @@
                     <div class="bottom-button-text">
                         Show Recommendations!
                     </div>
+                    
                 </div>
             </div>
             <div class="footer"></div>
@@ -145,11 +149,10 @@
                 let addTagButton = document.getElementById('add-tag-button');
                 addTagButton.addEventListener('click', addTag);
             }
-            function answerBoxTemplate(title, titleDesc, rating) {
+            function answerBoxTemplate(title, titleDesc) {
                 return `<div class=''>
-                    <h3 class='episode-title'>${title}</h3>
-                    <p class='episode-desc'>${titleDesc}</p>
-                    <p class='episode-rating'>IMDB Rating: ${rating}</p>
+                    <h3 class='fanfic-title'>${title}</h3>
+                    <p class='fanfic-desc'>${titleDesc}</p>
                 </div>`
             }
 
@@ -160,11 +163,11 @@
             function filterText(id) {
                 document.getElementById("answer-box").innerHTML = ""
                 console.log(document.getElementById(id).value)
-                fetch("/episodes?" + new URLSearchParams({ title: document.getElementById(id).value }).toString())
+                fetch("/fanfic-recs")
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.descr, row.imdb_rating)
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.descr)
                         document.getElementById("answer-box").appendChild(tempDiv)
                     }));
             }

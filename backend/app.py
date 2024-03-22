@@ -17,6 +17,7 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 # Specify the path to the JSON file relative to the current script
 novel_json_file_path = os.path.join(current_directory, 'novel_info.json')
 
+cossim_json_file_path = os.path.join(current_directory, 'webnovel_to_fanfic_cossim.json')
 
 
 def getKeyInfo(data,key):
@@ -31,7 +32,6 @@ def getTitleInfo(data):
         lst.append(data[i]['titles'][0])
     return lst
 
-# Assuming your JSON data is stored in a file named 'init.json'
 with open(novel_json_file_path, 'r') as file:
     novel_data = np.array(json.load(file))
     novel_titles = getKeyInfo(novel_data,'titles')
@@ -39,6 +39,22 @@ with open(novel_json_file_path, 'r') as file:
     novel_title_to_index = {}
     for i in range (len(novel_titles)):
         novel_title_to_index[novel_titles[i][0]] = i
+        
+fanfics = {}
+fanfic_files = ['fanfic_G_2019_processed-pg1.json', 'fanfic_G_2019_processed-pg2.json', 'fanfic_G_2019_processed-pg3.json']
+for file in fanfic_files:
+    file = os.path.join(current_directory, file)
+    with open(file, 'r') as f: 
+        temp_fanfic_list = json.load(f)
+
+        for fanfic_info in temp_fanfic_list:
+            fanfics[fanfic_info['id']] = fanfic_info
+
+with open(cossim_json_file_path, 'r') as file: 
+    file_contents = json.load(file)
+    cossims = file_contents['cossims']
+    webnovel_title_to_index = file_contents['webnovel_title_to_index']
+    index_to_fanfic_id = file_contents['index_to_fanfic_id']
 
 app = Flask(__name__)
 
@@ -53,13 +69,39 @@ def json_search(query):
             matches.append({'title': novel_titles[i][0],'descr':novel_descriptions[i]})
     return matches
 
+
+@app.route("/fanfic-recs")
+def webnovel_to_top10fics(webnovel_title):
+    """
+    input: webnovel_title --> the title of the user queried webnovel
+    output: the top 10 fanfiction information. Can include: 
+        - fanfic_id
+        - fanfic_titles
+        - descriptions
+        - etc.
+    """
+    webnovel_index = webnovel_title_to_index[webnovel_title]
+    sorted_fanfics_tuplst = cossims[webnovel_index]
+    top_10 = sorted_fanfics_tuplst[:10]
+    top_10_fanfic_indexes = [top_10[1] for t in top_10]
+    top_10_fanfics = []
+    for i in top_10_fanfic_indexes:
+        fanfic_id = index_to_fanfic_id[i]
+        info_dict = {}
+        info_dict["fanfic_id"] = fanfic_id                              # get fanfic id
+        info_dict["description"] = fanfics[fanfic_id]['description']    # get description
+        info_dict["title"] = fanfics[fanfic_id]["title"]                # get title
+        top_10_fanfics.append(info_dict)
+    return top_10_fanfics
+    
+
 @app.route("/")
 def home():
     session['title-index'] = 0
     session['tags'] = None
-
     return render_template('home.html',title="sample html")
 
+selectedNovel = ""
 @app.route("/results/")
 def results():
     session['tags'] = None
@@ -91,6 +133,7 @@ def episodes_search():
 @app.route("/setNovel")
 def setNovel():
     selectedNovel = request.args.get("title")
+    # session['title'] = request.args.get("title")
     session['title-index'] = novel_title_to_index[selectedNovel]
     returnDict = {'title': selectedNovel}
     return returnDict

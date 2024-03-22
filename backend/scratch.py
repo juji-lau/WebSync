@@ -22,8 +22,8 @@ index_to_fic_id: maps a zero-based index to the fanfiction id.
 """
 fic_id_to_index = {}
 index_to_fic_id = {}
-wn_title_to_index = {}
-index_to_wn_title = {}
+webnovel_title_to_index = {}
+index_to_webnovel_title = {}
 
 def get_fanfic_data():
     """"
@@ -133,8 +133,8 @@ def tokenize_fanfics(tokenize_method: Callable[[str], List[str]],
 def tokenize_webnovels(tokenize_method: Callable[[str], List[str]], 
     input_webnovels: List[Dict[str, str]], ) -> List[str]:
     """Returns a list of tokens contained in an entire list of webnovels. 
-      Creates an id mapping for webnovels, then populates: wn_title_to_index{} 
-      and index_to_wn_title{}  
+      Creates an id mapping for webnovels, then populates: webnovel_title_to_index{} 
+      and index_to_webnovel_title{}  
 
     Parameters
     ----------
@@ -157,8 +157,8 @@ def tokenize_webnovels(tokenize_method: Callable[[str], List[str]],
       webnovel_description = webnovel_dict['description']
       tokenized_descriptions.append({"index":counter, "tokenized_description":tokenize_method(webnovel_description)})
       # add to fic_id_to_index, and index_to_fic_id:
-      wn_title_to_index[webnovel_title] = counter
-      index_to_wn_title[counter] = webnovel_title
+      webnovel_title_to_index[webnovel_title] = counter
+      index_to_webnovel_title[counter] = webnovel_title
       counter+=1
     return tokenized_descriptions    
 
@@ -387,16 +387,7 @@ def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_nor
         cossims = input_get_sims_method(webnovel['tokenized_description'], fanfic_inv_index, fanfic_idf, fanfic_norms, score_func)
         webnovel_sims[webnovel['index']] = cossims
 
-        if i == int(n_webnovels/2):
-            final_dictionary = {'cossims':cossims}
-            file = 'cossim1.json'
-            with open(file, 'w', encoding='utf-8') as f:
-                json.dump({'cossims': webnovel_sims}, f)
-            webnovel_sims = {} # this line is here because otherwise computers with less than 16GB memory 
-    
-    file = 'cossim2.json'
-    with open(file, 'w', encoding='utf-8') as f:
-        json.dump({'cossims':webnovel_sims}, f)
+    return webnovel_sims
 
 def main():
     fanfics = get_fanfic_data()
@@ -570,11 +561,11 @@ def edit_distance_search(
     
     #print(msgs[0])      # List of titles for a single webnovel
     for webnov_title_lst in msgs:
-      wn_title = webnov_title_lst[0]
-      #novel_title_ind = wn_title_to_index[webnov_title_lst[0]]
+      webnovel_title = webnov_title_lst[0]
+      #novel_title_ind = webnovel_title_to_index[webnov_title_lst[0]]
      #print("HERES THE INDEX", novel_title_ind)
-      score = edit_distance(query, wn_title, ins_cost_func, del_cost_func, sub_cost_func)
-      lst_of_tups.append((score, wn_title))
+      score = edit_distance(query, webnovel_title, ins_cost_func, del_cost_func, sub_cost_func)
+      lst_of_tups.append((score, webnovel_title))
 
     sort_lst = sorted(lst_of_tups, key = lambda x: x[0])[:10]
 
