@@ -91,6 +91,7 @@ body {
 .search-bar{
     background:none;
     border-width: 0px 0px 3px 0px;
+    font-family: 'Kanit', sans-serif;
 }
 
 .search-bar:focus {
