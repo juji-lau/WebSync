@@ -5,6 +5,8 @@ from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
 import numpy as np
+from scratch import edit_distance_search
+from scratch import insertion_cost, deletion_cost, substitution_cost
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
@@ -37,6 +39,7 @@ app = Flask(__name__)
 app.secret_key = 'BAD_SECRET_KEY'
 CORS(app)
 
+
 def json_search(query):
     matches = []
     for i in range (len(novel_titles)):
@@ -59,7 +62,19 @@ def results():
 @app.route("/episodes")
 def episodes_search():
     text = request.args.get("title")
+
     return json_search(text)
+
+    # Return a List (dictionary: { title, description })
+    # list_dicts = []
+    # list_titles = edit_distance_search(text, novel_titles, insertion_cost, deletion_cost, substitution_cost )
+    # for title in list_titles:
+    #     # Create a dictionary for each tuple
+    #     dict_title = {'title': title}
+    #     # Append the dictionary to the list
+    #     list_dicts.append(dict_title)
+    # return list_dicts
+
 
 @app.route("/setNovel")
 def setNovel():
