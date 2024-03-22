@@ -21,9 +21,6 @@
                         Results
                     </div>
                 </div>
-                <div class="answer-title">
-                    Answers
-                </div>
                 <div id="answer-box">
                 </div>
                 <div class="bottom-button-containers">
@@ -79,7 +76,7 @@
                     <div class="bottom-button-text">
                         Show Recommendations!
                     </div>
-                    
+                    <button onclick="showResults()">Show Recommendations</button>
                 </div>
             </div>
             <div class="footer"></div>
@@ -160,14 +157,15 @@
                 document.getElementById(id).focus()
             }
 
-            function filterText(id) {
+            function showResults(title) {
                 document.getElementById("answer-box").innerHTML = ""
-                console.log(document.getElementById(id).value)
-                fetch("/fanfic-recs")
+                
+                fetch("/fanfic-recs/")
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
+                        console.log(row)
                         let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.descr)
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.description)
                         document.getElementById("answer-box").appendChild(tempDiv)
                     }));
             }

@@ -221,13 +221,13 @@ label {
     overflow: scroll;
 }
 
-.episode-title {
+.fanfic-title {
     font-family: 'Kanit', sans-serif;
     color: black;
     font-size: medium;
 }
 
-.episode-desc {
+.fanfic-desc {
     font-family: 'Montserrat', sans-serif;
     color: darkslategray;
     font-size: small;

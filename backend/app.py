@@ -70,7 +70,10 @@ def json_search(query):
     return matches
 
 
-@app.route("/fanfic-recs")
+@app.route("/fanfic-recs/")
+def recommendations(): 
+    return webnovel_to_top10fics(session['title'])
+
 def webnovel_to_top10fics(webnovel_title):
     """
     input: webnovel_title --> the title of the user queried webnovel
@@ -81,12 +84,12 @@ def webnovel_to_top10fics(webnovel_title):
         - etc.
     """
     webnovel_index = webnovel_title_to_index[webnovel_title]
-    sorted_fanfics_tuplst = cossims[webnovel_index]
+    sorted_fanfics_tuplst = cossims[str(webnovel_index)]
     top_10 = sorted_fanfics_tuplst[:10]
-    top_10_fanfic_indexes = [top_10[1] for t in top_10]
+    top_10_fanfic_indexes = [t[1] for t in top_10]
     top_10_fanfics = []
     for i in top_10_fanfic_indexes:
-        fanfic_id = index_to_fanfic_id[i]
+        fanfic_id = index_to_fanfic_id[str(i)]
         info_dict = {}
         info_dict["fanfic_id"] = fanfic_id                              # get fanfic id
         info_dict["description"] = fanfics[fanfic_id]['description']    # get description
@@ -133,7 +136,7 @@ def episodes_search():
 @app.route("/setNovel")
 def setNovel():
     selectedNovel = request.args.get("title")
-    # session['title'] = request.args.get("title")
+    session['title'] = request.args.get("title")
     session['title-index'] = novel_title_to_index[selectedNovel]
     returnDict = {'title': selectedNovel}
     return returnDict
