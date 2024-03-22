@@ -59,7 +59,6 @@
             function filterText(id){
                 var count = 0;
                 document.getElementById("button-box").innerHTML = ""
-                console.log(new URLSearchParams({ title: document.getElementById(id).value }).toString())
                 fetch("/episodes?" + new URLSearchParams({ title: document.getElementById(id).value }).toString())
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {

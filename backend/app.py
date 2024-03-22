@@ -46,10 +46,14 @@ def json_search(query):
 
 @app.route("/")
 def home():
+    session['title-index'] = 0
+    session['tags'] = None
     return render_template('home.html',title="sample html")
 
 @app.route("/results/")
 def results():
+    session['title-index'] = 0
+    session['tags'] = None
     return render_template('base.html',title="sample html")
 
 @app.route("/episodes")
@@ -68,6 +72,30 @@ def setNovel():
 def getNovel():
     returnDict = {'title': novel_titles[session['title-index']]}
     return returnDict
+
+@app.route("/addTag")
+def addTag():
+    print("add")
+    newTag = request.args.get("tag")
+    if session.get('tags') != None:
+        print("hi")
+        session['tags'].append(newTag)
+    else:
+        session['tags'] = []
+        session['tags'].append(newTag)
+    session.modified = True
+    return {'tags': newTag}
+
+@app.route("/removeTag")
+def removeTags():
+    print("remove")
+    tag = request.args.get("tag")
+    print(tag)
+    print(session['tags'])
+    session['tags'].remove(tag)
+    print(session['tags'])
+    session.modified = True
+    return {'tags': tag}
 
 if 'DB_NAME' not in os.environ:
     app.run(debug=True,host="0.0.0.0",port=5000)

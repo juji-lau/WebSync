@@ -90,9 +90,17 @@
                 deleteButton.textContent = "x";
                 deleteButton.addEventListener('click', () => {
                     tagContainer.removeChild(newTag);
+                    fetch("/removeTag?"+new URLSearchParams({ tag: inputTag}).toString())
+                    .then((response) => response.json())
+                    .then((data) => {
+                    })
                 });
                 newTag.appendChild(deleteButton);
                 tagContainer.appendChild(newTag);
+                fetch("/addTag?"+new URLSearchParams({ tag: inputTag}).toString())
+                .then((response) => response.json())
+                .then((data) => {
+                })
             }
             function setup(){
                 fetch("/getNovel?")

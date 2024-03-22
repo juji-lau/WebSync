@@ -29,7 +29,9 @@
     /*background-color: #d8e0f4;*/
     z-index: -1;
 }
-
+.search-bar {
+    width: 70%;
+}
 .search-container {
     display: flex;
     left: 0%;
