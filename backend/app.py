@@ -62,8 +62,6 @@ def home():
 
 @app.route("/results/")
 def results():
-    print(novel_data[0])
-    session['title-index'] = 0
     session['tags'] = None
     return render_template('base.html',title="sample html")
 
