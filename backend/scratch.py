@@ -9,6 +9,7 @@ from collections import defaultdict
 from collections import Counter
 import json
 import re 
+from tqdm import tqdm
 
 # Note: popularity score = (kudos * chapters) / hits
 #TODO: currently webnovel["title"] gives a list of associated webnovel titles\
@@ -29,9 +30,6 @@ index_to_fic_id = {}
 wn_title_to_index = {}
 index_to_wn_title = {}
 
-
-fanfics = []
-webnovels = []
 def get_fanfic_data():
     """"
     Gets the fanfic data in the form: 
@@ -56,11 +54,13 @@ def get_fanfic_data():
         }, ...
     ]
     """
+    fanfics = []
     # files is a list of dictionaries.  List[Dict(fanfic_id, description)]
-    files = ['fanfic_G_2019-processed-pg1.json', 'fanfic_G_2019-processed-pg2.json', 'fanfic_G_2019-processed-pg3.json']
+    files = ['fanfic_G_2019_processed-pg1.json', 'fanfic_G_2019_processed-pg2.json', 'fanfic_G_2019_processed-pg3.json']
     for file in files:
         with open(file, 'r') as f:
             fanfics = fanfics + json.load(f)
+    return fanfics
 
 def get_webnovel_data():
     """"
@@ -78,11 +78,13 @@ def get_webnovel_data():
         }, ...
     ]
     """
+    webnovels = []
     # files is a list of dictionaries.  List[Dict(fanfic_id, description)]
     files = ['novel_info.json']
     for file in files:
         with open(file, 'r') as f:
             webnovels = webnovels + json.load(f)
+    return webnovels
 
 def tokenize(text: str) -> List[str]:
     """Returns a list of words that make up the text.
@@ -179,8 +181,8 @@ def build_inverted_index(msgs: List[dict]) -> dict:
 
     inverted_index: dict
         For each term, the index contains
-        a sorted list of tuples (doc_id, count_of_term_in_doc)
-        such that tuples with smaller doc_ids appear first:
+        a sorted list of tuples (doc_index, count_of_term_in_doc)
+        such that tuples with smaller doc_indexes appear first:
         inverted_index[term] = [(d1, tf1), (d2, tf2), ...]
 
     Example
@@ -220,7 +222,6 @@ def build_inverted_index(msgs: List[dict]) -> dict:
             tup = (msg, curr_count+1)
             (iid[tok])[first_inst[tok]] = tup
     return iid
-    #raise NotImplementedError()
 
 def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=0.95):
     """Compute term IDF values from the inverted index.
@@ -311,11 +312,11 @@ def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> di
     return doc_scores
 
 # want to build a cosine similarity matrix of webnovels_descriptions x fanfics_descriptions
-def index_search(
+def compute_cossim_for_webnovel(
     webnovel_toks: Dict[str, str],
-    index: dict,
-    idf,
-    doc_norms,
+    fanfic_inv_index: dict,
+    fanfic_idf,
+    fanfic_norms,
     score_func=accumulate_dot_scores,
 ) -> List[Tuple[int, int]]:
     """Search the collection of documents for the given query
@@ -326,28 +327,24 @@ def index_search(
     webnovel_toks: string,
         The webnovel.
 
-    index: an inverted index as above
+    fanfic_inv_index: an inverted index as above
 
-    idf: idf values precomputed as above
+    fanfic_idf: idf values precomputed as above
 
-    doc_norms: document norms as computed above
+    fanfic_norms: fanfic norms as computed above
 
     score_func: function,
         A function that computes the numerator term of cosine similarity (the dot product) for all documents.
         Takes as input a dictionary of query word counts, the inverted index, and precomputed idf values.
         (See Q7)
 
-    tokenizer: a TreebankWordTokenizer
-
     Returns
     =======
 
-    results, list of tuples (score, doc_id)
+    results, list of tuples (score, fanfic_index)
         Sorted list of results such that the first element has
-        the highest score, and `doc_id` points to the document
+        the highest score, and `fanfic_index` points to the fanfic
         with the highest score.
-
-    Note:
 
     """
 
@@ -357,13 +354,13 @@ def index_search(
 
     norm = 0
     for term in webnovel_unique_toks: 
-      if term in idf and term in webnovel_word_counts:
-        norm += (webnovel_word_counts[term]*idf[term])**2
-      elif term not in idf and term in webnovel_word_counts:
+      if term in fanfic_idf and term in webnovel_word_counts:
+        norm += (webnovel_word_counts[term]*fanfic_idf[term])**2
+      elif term not in fanfic_idf and term in webnovel_word_counts:
         del webnovel_word_counts[term]
-    norms = math.sqrt(norm) * doc_norms
+    norms = math.sqrt(norm) * fanfic_norms
 
-    doc_scores = score_func(webnovel_word_counts, index, idf)
+    doc_scores = score_func(webnovel_word_counts, fanfic_inv_index, fanfic_idf)
 
     cossim = []
     for doc in doc_scores:
@@ -373,12 +370,9 @@ def index_search(
     return result
     
 
-def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_doc_norms, score_func, input_get_sim_method):
-    """Returns a movie_sims matrix of size (num_movies,num_movies) where for (i,j):
-        [i,j] should be the cosine similarity between the movie with index i and the movie with index j
-        
-    Note: You should set values on the diagonal to 1
-    to indicate that all movies are trivially perfectly similar to themselves.
+def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_norms, score_func, input_get_sim_method):
+    """Returns a cosine similarity dictionary with len(webnovels_tokenized) keys:
+        [webnovel_id] should be the ranked list of cosine similarity between the webnovel and all fanfics 
     
     Params: {n_mov: Integer, the number of movies
              movie_index_to_name: Dictionary, a dictionary that maps movie index to name
@@ -387,24 +381,62 @@ def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_doc
              input_get_sim_method: Function, a function to compute cosine similarity}
     Returns: Numpy Array 
     """
-    # TODO-5.4
-    webnovel_sims = {} # key - webnovel id, value = list of sorted fanfics by similarity
+    webnovel_sims = {} # key - webnovel id, value = list of sorted fanfics by similarity (cos sim score, fanfic index)
 
-    for webnovel in webnovels_tokenized:
-        cossims = input_get_sim_method(webnovel['tokenized_description'])
+    for i in tqdm(range(len(webnovels_tokenized))):
+        webnovel = webnovels_tokenized[i]
+        cossims = input_get_sim_method(webnovel['tokenized_description'], fanfic_inv_index, fanfic_idf, fanfic_norms, score_func)
         webnovel_sims[webnovel['id']] = cossims
 
     return webnovel_sims
-    
-    # for i in range(n_mov):
-    #   for j in range(i, n_mov):
-    #     if i==j:
-    #       movie_sims[i, j] = 1
-    #     else:
-    #       movie_sims[i, j] = input_get_sim_method(movie_index_to_name[i], movie_index_to_name[j], input_doc_mat, movie_name_to_index)
-    #       movie_sims[j, i] = movie_sims[i, j]
 
-    # return movie_sims
+def main():
+    fanfics = get_fanfic_data()
+    webnovels = get_webnovel_data()
+
+    print("Got webnovels and fanfics")
+
+    n_fanfics = len(fanfics)
+    n_webnovels = len(webnovels)
+
+    print("determined length")
+
+    fanfics_tokenized = tokenize_fanfics(tokenize, fanfics)
+    webnovels_tokenized = tokenize_webnovels(tokenize, webnovels)
+
+    print("tokenized")
+
+    fanfic_inverted_index = build_inverted_index(fanfics_tokenized)
+
+    print("calculated fanfic inverted index")
+
+    fanfic_idf = compute_idf(fanfic_inverted_index, n_fanfics)
+
+    print("calculated fanfic idf")
+
+    fanfic_norms = compute_doc_norms(fanfic_inverted_index, fanfic_idf, n_fanfics)
+
+    print("calculated fanfic norms")
+
+    cossims = build_sims_cos(webnovels_tokenized[:5], fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
+    
+    print('calculated cossims')
+    print(cossims[0][0])
+    print()
+    print("webnovel description")
+    print(webnovels[0]['description'])
+    print("fanfic description 1")
+    print(fanfics[cossims[0][0][1]]['description'])
+    print()
+    print("fanfic description 2")
+    print(fanfics[cossims[0][1][1]]['description'])
+
+if __name__ == "__main__":
+    main()
+
+'''
+====================================== Edit Distance Search for Frontend ===================================================
+'''
     
 
 def insertion_cost(message, j):
