@@ -1,22 +1,17 @@
-#from src.utils.utils import timer
 from typing import List, Tuple, Dict
 from collections.abc import Callable
-#from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
-#import src.data_processing.helpers as helpers
 import math
-from collections import defaultdict
-from collections import Counter
+from collections import defaultdict, Counter
 import json
 import re 
 from tqdm import tqdm
 
 # Note: popularity score = (kudos * chapters) / hits
-#TODO: currently webnovel["title"] gives a list of associated webnovel titles\
+# TODO: currently webnovel["title"] gives a list of associated webnovel titles\
 # right now, we are returning webnovel["title"][0].  Find a way to \
 # incorporate all associated titles
-#TODO: edit distance search for webnovels
-
+# TODO: edit distance search for webnovels
 
 """
 fic_id_to_index: maps the fanfiction id to a zero-based index. 
@@ -114,14 +109,14 @@ def tokenize_fanfics(tokenize_method: Callable[[str], List[str]],
     ----------
     tokenize_method : Callable[[str], List[str]]
         A method to tokenize a string into a list of strings representing words.
-    input_fanfics : List[Dict{}].  See get_fanfic_data() for more info
+    input_fanfics : List[Dict[]].  See get_fanfic_data() for more info
         A list of fanfiction dictionaries 
         (specified as a dictionary with ``id``, ``description``, and other tags specified above).
     
     Returns
     -------
-    List[Dict{fanfic_id:str, tokenized_description:str}]
-        A list of tokens for a single description, for the entire list of fanfics.
+    List[Dict{fanfic_id:int, tokenized_description:List[str]}]
+        A list of dictionaries, where each dictionary is a single fanfiction, with an id and a tokenized description.
     """
     counter = 0
     tokenized_descriptions = []
@@ -151,16 +146,16 @@ def tokenize_webnovels(tokenize_method: Callable[[str], List[str]],
 
     Returns
     -------
-    List[Dict{webnovel_id : int, tokenized_descriptions:str}]
-        A list of dictionaries, where key == webnovel_id, and value == tokenized description
-        Note: the webnovel_id is an index, which can be mapped to the *first* title of the associated webnovel.
+    List[Dict{webnovel_index : int, tokenized_descriptions:str}]
+        A list of dictionaries, where key == webnovel_index, and value == tokenized description
+        Note: the webnovel_index is an index, which can be mapped to the *first* title of the associated webnovel.
     """
     counter = 0
     tokenized_descriptions = []
     for webnovel_dict in input_webnovels:
       webnovel_title = webnovel_dict['titles'][0]
       webnovel_description = webnovel_dict['description']
-      tokenized_descriptions.append({"id":counter, "tokenized_description":tokenize_method(webnovel_description)})
+      tokenized_descriptions.append({"index":counter, "tokenized_description":tokenize_method(webnovel_description)})
       # add to fic_id_to_index, and index_to_fic_id:
       wn_title_to_index[webnovel_title] = counter
       index_to_wn_title[counter] = webnovel_title
@@ -227,8 +222,8 @@ def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=0.95):
     """Compute term IDF values from the inverted index.
     Words that are too frequent or too infrequent get pruned.
 
-    Hint: Make sure to use log base 2.
-
+    Arguments
+    =========
     inv_idx: an inverted index as above
 
     n_docs: int,
@@ -245,12 +240,10 @@ def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=0.95):
 
     Returns
     =======
-
     idf: dict
         For each term, the dict contains the idf value.
 
     """
-    # TODO-5.1
     idf = {}
     for term in inv_idx: 
       term_df = len(inv_idx[term])
@@ -263,15 +256,17 @@ def compute_doc_norms(index, idf, n_docs):
     """Precompute the euclidean norm of each document.
     index: the inverted index as above
 
+    Arguments
+    =========
     idf: dict,
         Precomputed idf values for the terms.
 
     n_docs: int,
         The total number of documents.
+
     norms: np.array, size: n_docs
         norms[i] = the norm of document i.
     """
-    # TODO-6.1
     norms = np.zeros((n_docs))
 
     for term in idf: 
@@ -286,7 +281,6 @@ def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> di
 
     Arguments
     =========
-
     query_word_counts: dict,
         A dictionary containing all words that appear in the query;
         Each word is mapped to a count of how many times it appears in the query.
@@ -297,10 +291,12 @@ def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> di
 
     idf: dict,
         Precomputed idf values for the terms.
+
+    Returns 
+    =========
     doc_scores: dict
         Dictionary mapping from doc ID to the final accumulated score for that doc
     """
-    # TODO-7.1
     doc_scores = {}
     for query_word in query_word_counts: 
       query_word_count = query_word_counts[query_word]
@@ -311,13 +307,12 @@ def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> di
           doc_scores[doc] += tf*idf[query_word]*query_word_count*idf[query_word]
     return doc_scores
 
-# want to build a cosine similarity matrix of webnovels_descriptions x fanfics_descriptions
 def compute_cossim_for_webnovel(
     webnovel_toks: Dict[str, str],
     fanfic_inv_index: dict,
     fanfic_idf,
     fanfic_norms,
-    score_func=accumulate_dot_scores,
+    score_func = accumulate_dot_scores,
 ) -> List[Tuple[int, int]]:
     """Search the collection of documents for the given query
 
@@ -336,7 +331,7 @@ def compute_cossim_for_webnovel(
     score_func: function,
         A function that computes the numerator term of cosine similarity (the dot product) for all documents.
         Takes as input a dictionary of query word counts, the inverted index, and precomputed idf values.
-        (See Q7)
+        (See accumulate_dot_scores)
 
     Returns
     =======
@@ -347,8 +342,6 @@ def compute_cossim_for_webnovel(
         with the highest score.
 
     """
-
-    # TODO-8.1
     webnovel_unique_toks = list(set(webnovel_toks))
     webnovel_word_counts = dict(Counter(webnovel_unique_toks)) 
 
@@ -370,23 +363,28 @@ def compute_cossim_for_webnovel(
     return result
     
 
-def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_norms, score_func, input_get_sim_method):
+def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_norms, score_func, input_get_sims_method):
     """Returns a cosine similarity dictionary with len(webnovels_tokenized) keys:
-        [webnovel_id] should be the ranked list of cosine similarity between the webnovel and all fanfics 
+        [webnovel_index] should be the ranked list of cosine similarity between the webnovel and all fanfics 
     
-    Params: {n_mov: Integer, the number of movies
-             movie_index_to_name: Dictionary, a dictionary that maps movie index to name
-             input_doc_mat: Numpy Array, a numpy array that represents the document-term matrix
-             movie_name_to_index: Dictionary, a dictionary that maps movie names to index
-             input_get_sim_method: Function, a function to compute cosine similarity}
-    Returns: Numpy Array 
+    Arguments
+    =========
+
+    input_get_sim_method: function,
+        a function to compute a ranked cosine similarity list between a singular webnovel and all relevant fanfics
+        (look at compute_cossim_for_webnovel)
+
+    Returns
+    =========
+    webnovel_sims: dict
+        The key is a webnovel_index and the value is a ranked list of cosine similarity (cos sim score, fanfic_index)
     """
     webnovel_sims = {} # key - webnovel id, value = list of sorted fanfics by similarity (cos sim score, fanfic index)
 
     for i in tqdm(range(len(webnovels_tokenized))):
         webnovel = webnovels_tokenized[i]
-        cossims = input_get_sim_method(webnovel['tokenized_description'], fanfic_inv_index, fanfic_idf, fanfic_norms, score_func)
-        webnovel_sims[webnovel['id']] = cossims
+        cossims = input_get_sims_method(webnovel['tokenized_description'], fanfic_inv_index, fanfic_idf, fanfic_norms, score_func)
+        webnovel_sims[webnovel['index']] = cossims
 
     return webnovel_sims
 
@@ -394,42 +392,41 @@ def main():
     fanfics = get_fanfic_data()
     webnovels = get_webnovel_data()
 
-    print("Got webnovels and fanfics")
-
     n_fanfics = len(fanfics)
     n_webnovels = len(webnovels)
-
-    print("determined length")
 
     fanfics_tokenized = tokenize_fanfics(tokenize, fanfics)
     webnovels_tokenized = tokenize_webnovels(tokenize, webnovels)
 
-    print("tokenized")
-
     fanfic_inverted_index = build_inverted_index(fanfics_tokenized)
-
-    print("calculated fanfic inverted index")
-
     fanfic_idf = compute_idf(fanfic_inverted_index, n_fanfics)
-
-    print("calculated fanfic idf")
-
     fanfic_norms = compute_doc_norms(fanfic_inverted_index, fanfic_idf, n_fanfics)
 
-    print("calculated fanfic norms")
+    cossims = build_sims_cos(webnovels_tokenized, fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
 
-    cossims = build_sims_cos(webnovels_tokenized[:5], fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
-    
-    print('calculated cossims')
-    print(cossims[0][0])
-    print()
-    print("webnovel description")
-    print(webnovels[0]['description'])
-    print("fanfic description 1")
-    print(fanfics[cossims[0][0][1]]['description'])
-    print()
-    print("fanfic description 2")
-    print(fanfics[cossims[0][1][1]]['description'])
+    # # Some Example Code
+    # print("Web Novel")
+    # print(webnovels[0]['titles'])
+    # print(webnovels[0]['description'])
+    # print()
+    # print("Fanfic 1")
+    # print(fanfics[cossims[0][0][1]]['id'])
+    # print(fanfics[cossims[0][0][1]]['title'])
+    # print(fanfics[cossims[0][0][1]]['description'])
+    # print(fanfics[cossims[0][0][1]]['tags'])
+    # print()
+    # print("Fanfic 2")
+    # print(fanfics[cossims[0][1][1]]['id'])
+    # print(fanfics[cossims[0][1][1]]['title'])
+    # print(fanfics[cossims[0][1][1]]['description'])
+    # print(fanfics[cossims[0][1][1]]['tags'])
+
+    # index_to_fanfic_id and fanfic_id_to_index might not be necessary; look at previus example to see why
+
+    final_dictionary = {'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'fanfic_id_to_index':fic_id_to_index,'index_to_webnovel_title':index_to_wn_title, 'webnovel_title_to_index':wn_title_to_index, 'fanfic_list':fanfics, 'webnovel_list':webnovels}
+    file = 'webnovel_to_fanfic_cossim.json'
+    with open(file, 'w', encoding='utf-8') as f:
+        json.dump(cossims, f)
 
 if __name__ == "__main__":
     main()
