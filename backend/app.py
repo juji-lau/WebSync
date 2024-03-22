@@ -25,6 +25,12 @@ def getKeyInfo(data,key):
         lst.append(data[i][key])
     return lst
 
+def getTitleInfo(data):
+    lst = []
+    for i in range(len(data)):
+        lst.append(data[i]['titles'][0])
+    return lst
+
 # Assuming your JSON data is stored in a file named 'init.json'
 with open(novel_json_file_path, 'r') as file:
     novel_data = np.array(json.load(file))
@@ -44,17 +50,19 @@ def json_search(query):
     matches = []
     for i in range (len(novel_titles)):
         if query.lower() in novel_titles[i][0].lower() and query != "":
-            matches.append({'title': novel_titles[i],'descr':novel_descriptions[i]})
+            matches.append({'title': novel_titles[i][0],'descr':novel_descriptions[i]})
     return matches
 
 @app.route("/")
 def home():
     session['title-index'] = 0
     session['tags'] = None
+
     return render_template('home.html',title="sample html")
 
 @app.route("/results/")
 def results():
+    print(novel_data[0])
     session['title-index'] = 0
     session['tags'] = None
     return render_template('base.html',title="sample html")
@@ -62,15 +70,21 @@ def results():
 @app.route("/episodes")
 def episodes_search():
     text = request.args.get("title")
-
     return json_search(text)
-
-    # Return a List (dictionary: { title, description })
+    #Return a List (dictionary: { title, description })
     # list_dicts = []
-    # list_titles = edit_distance_search(text, novel_titles, insertion_cost, deletion_cost, substitution_cost )
-    # for title in list_titles:
+
+    # novel_dicts = []
+    # for novel in novel_titles:
+    #     novel_dicts.append({'text': novel})
+    # tup_list = edit_distance_search(text, novel_dicts, insertion_cost, deletion_cost, substitution_cost)
+    # print(tup_list[0])
+    # for tup in tup_list:
+    #     print(tup)
+    #     score = tup[0]
+    #     title = tup[1]
     #     # Create a dictionary for each tuple
-    #     dict_title = {'title': title}
+    #     dict_title = {'title': title, 'score': score}
     #     # Append the dictionary to the list
     #     list_dicts.append(dict_title)
     # return list_dicts
@@ -85,7 +99,11 @@ def setNovel():
 
 @app.route("/getNovel")
 def getNovel():
-    returnDict = {'title': novel_titles[session['title-index']]}
+    index = session['title-index']
+    returnDict = {'title': novel_titles[index],
+                  'descr':novel_descriptions[index],
+                  'author':novel_data[index]['authors'][0],
+                  'genres': novel_data[index]['genres']}
     return returnDict
 
 @app.route("/addTag")

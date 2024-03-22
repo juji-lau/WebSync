@@ -1,3 +1,8 @@
+@font-face {
+    font-family: shoreline-font;
+    src: url(Shoreline.otf);
+}
+
 .solidline {
     position: fixed; /* Ensure that absolutely positioned elements are positioned relative to this container */
     display: flex;
@@ -6,7 +11,7 @@
     border-style: dashed;
     /* Adjust color, width, and style as needed */
     width: 100%;
-    height: 29%;
+    height: 19%;
     box-shadow: 0 0 10px rgba(48, 43, 66, 0.5);
     z-index: 2;
     overflow: hidden; /* Prevent content from overflowing */
@@ -25,7 +30,7 @@
     justify-content: start;
     align-items: center;
     flex-direction: column;
-    background-color: purple;
+    background-color: none;
     /*background-color: #d8e0f4;*/
     z-index: -1;
 }
@@ -35,7 +40,7 @@
 .search-container {
     display: flex;
     left: 0%;
-    top: 31%;
+    top: 21%;
     width: 40%;
     height: 70%;
     z-index: 1;
@@ -47,7 +52,7 @@
     border-width: 7px 0 0 0;
     border-color: #717171;
 
-    background-image: url(https://images.app.goo.gl/yw5UYuDGdxEs6a7t6), url(https://i.pinimg.com/236x/36/c3/a6/36c3a697fe6e6fc6d84713569732ebfb.jpg);
+    background-color: rgb(177, 166, 152);
     background-size: cover;
     background-position: bottom, bottom;
     background-repeat: no-repeat, no-repeat;
@@ -59,7 +64,7 @@
 .results-container {
     display: flex;
     left: 40%;
-    top: 31%;
+    top: 21%;
     width: 60%;
     height: 70%;
     background-color: #d8e0f4;
@@ -82,14 +87,14 @@
     display: flex;
     position: fixed;
     width: 100%;
-    height: 30%;
+    height: 20%;
     z-index: 1;
     flex-direction: column;
-    background-color: #FFE8E8;
+    background-color: antiquewhite;
     justify-content: center;
     align-items: center;
     border-bottom: 7px solid #717171;
-    box-shadow: inset 0 0 20px rgba(117, 7, 65, 0.75);
+    box-shadow: inset 0 0 20px rgba(150, 107, 100, 0.75);
     padding-top: 20px;
 }
 
@@ -104,10 +109,10 @@
 }
 
 .subtitle {
-    font-family: "Comic Sans MS";
+    font-family: shoreline-font;
     font-size: 14px;
     font-weight: 30;
-    color: #1530ab;
+    color: black;
     line-height: 0;
     padding-bottom: 20px;
 }
@@ -163,7 +168,7 @@ label {
 
 }
 
-.horizontal {
+.horizontal-input {
     padding: 10px;
     background-color: lightgray;
     border-radius: 4px;
@@ -243,4 +248,51 @@ label {
     border-radius: 10px;
     align-items: center;
     padding: 5px;
+}
+
+.novel-info-container {
+    background-color: #1c1c1c;
+    color: white;
+    width: 90%;
+    height: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    text-align: center;
+    padding: 5% 5%;
+    overflow: scroll
+}
+
+.group {
+    display: block;
+    width: 100%;
+    height: 50%;
+}
+
+#selected-descr {
+    background-color: none;
+    height: 50%;
+    overflow:scroll;
+    text-align: start;
+}
+
+.horizontal {
+    display:flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#genres-container {
+    display: grid;
+    gap: 5px;
+    width: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    justify-content: center;
+    align-items: center;
+}
+
+.genre-tag {
+    background-color: #FFD4B7;
+    border-radius: 10px;
 }

@@ -63,7 +63,7 @@
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {
                     if (count < 5){
-                        document.getElementById("button-box").appendChild(titleButtonTemplate(row.title[0]))
+                        document.getElementById("button-box").appendChild(titleButtonTemplate(row.title))
                         count++;
                     }else{
                         return;

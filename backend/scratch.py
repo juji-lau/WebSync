@@ -549,6 +549,14 @@ def edit_distance_search(
         is the top result in the list.
 
     """
+    result = []
+    for msg in msgs:
+      
+      dist = edit_distance(query,msg['text'],ins_cost_func,del_cost_func,sub_cost_func)
+      result.append((dist,msg['text']))
+    result.sort(key=lambda tup: tup[0])
+    print(result[:10])
+    return result
     # TODO-1.2
     lst_of_tups = []
     

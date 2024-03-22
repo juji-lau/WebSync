@@ -12,7 +12,7 @@
         <div class="full-body-container">
             <div class="header-container">
                 <h1 class="title"> WebSync </h1>
-                <h4 class="subtitle"> Find FanFictions that match your favorite Web Novels!</h4>
+                <h4 class="subtitle"> find fan fictions that match your favorite web novels!</h4>
             </div>
             <div class="solidline"> </div>
             <div class="results-container">
@@ -30,14 +30,23 @@
                 </div>
             </div>
             <div class="search-container">
-                <div class="input-group" onClick="sendFocus('web-novel-search')">
-                    <label>
-                        Web Novel:
-                    </label>
+                <div class="novel-info-container">
                     <div id="selected-title"></div>
                     <div class="horizontal">
-                        <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
-                        <input class="search-bar" id="web-novel-search" onkeyup="filterText('web-novel-search')"></input>
+                        <label> Author: </label>
+                        <div id="selected-author"></div>
+                    </div>
+                    <div class="group">
+                        <label>
+                            Genres:
+                        </label>
+                        <div id="genres-container">
+                            
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label>Description: </label>
+                        <div id="selected-descr"></div>
                     </div>
                 </div>
 
@@ -45,7 +54,7 @@
                     <label>
                         Tags:
                     </label>
-                    <div class="horizontal">
+                    <div class="horizontal-input">
                         <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
                         <input class="search-bar" id="tags-search">
                             <button id="add-tag-button"> + </button>
@@ -106,8 +115,31 @@
                 fetch("/getNovel?")
                 .then((response)=> response.json())
                 .then((data) => {
-                    titleContainer = document.getElementById("selected-title")
+                    let titleContainer = document.getElementById("selected-title")
                     titleContainer.textContent = data['title']
+                    let authorContainer = document.getElementById("selected-author")
+                    authorContainer.textContent = data['author']
+                    let descrContainer = document.getElementById("selected-descr")
+                    descrContainer.textContent = data['descr']
+                    let genres = data['genres']
+                    let genreContainer = document.getElementById("genres-container")
+                    if (genres.length > 4){
+                        for (var i = 0; i < 4; i ++){
+                            const genreTag = document.createElement('div');
+                            console.log(genreTag)
+                            genreTag.setAttribute('class','genre-tag');
+                            genreTag.textContent = genres[i];
+                            genreContainer.appendChild(genreTag);
+                        }
+                    } else {
+                        genres.forEach((genre) => {
+                            const genreTag = document.createElement('div');
+                            console.log(genreTag)
+                            genreTag.setAttribute('class','genre-tag');
+                            genreTag.textContent = genre;
+                            genreContainer.appendChild(genreTag);
+                        })
+                    }
                 })
                 let addTagButton = document.getElementById('add-tag-button');
                 addTagButton.addEventListener('click', addTag);
@@ -130,7 +162,6 @@
                 fetch("/episodes?" + new URLSearchParams({ title: document.getElementById(id).value }).toString())
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
-
                         let tempDiv = document.createElement("div")
                         tempDiv.innerHTML = answerBoxTemplate(row.title, row.descr, row.imdb_rating)
                         document.getElementById("answer-box").appendChild(tempDiv)
