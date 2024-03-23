@@ -100,6 +100,8 @@ def webnovel_to_top10fics(webnovel_title):
 
 @app.route("/")
 def home():
+    print(novel_titles[0])
+    session['title'] = novel_titles[0][0]
     session['title-index'] = 0
     session['tags'] = None
     return render_template('home.html',title="sample html")

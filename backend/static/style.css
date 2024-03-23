@@ -4,7 +4,8 @@
 }
 
 .solidline {
-    position: fixed; /* Ensure that absolutely positioned elements are positioned relative to this container */
+    position: fixed;
+    /* Ensure that absolutely positioned elements are positioned relative to this container */
     display: flex;
     border-color: #717171;
     border-width: 0 0 2px 0;
@@ -14,7 +15,8 @@
     height: 19%;
     box-shadow: 0 0 10px rgba(48, 43, 66, 0.5);
     z-index: 2;
-    overflow: hidden; /* Prevent content from overflowing */
+    overflow: hidden;
+    /* Prevent content from overflowing */
 
 }
 
@@ -30,19 +32,22 @@
     justify-content: start;
     align-items: center;
     flex-direction: column;
+    background-image: url(https://cdn2.vectorstock.com/i/1000x1000/09/71/coffee-stained-paper-vector-750971.jpg);
+    background-size: cover;
     background-color: none;
     /*background-color: #d8e0f4;*/
     z-index: -1;
 }
+
 .search-bar {
     width: 70%;
-    background:none;
+    background: none;
     border-width: 0px 0px 3px 0px;
 }
 
 .search-bar:focus {
     outline: none;
-    background:none;
+    background: none;
     border-width: 0px 0px 3px 0px;
 }
 
@@ -51,7 +56,7 @@
     left: 0%;
     top: 21%;
     width: 40%;
-    height: 70%;
+    height: 75%;
     z-index: 1;
     flex-direction: column;
     align-items: center;
@@ -60,7 +65,6 @@
     border-style: solid;
     border-width: 7px 0 0 0;
     border-color: #717171;
-
     background-color: antiquewhite;
     background-size: cover;
     background-position: bottom, bottom;
@@ -68,6 +72,9 @@
     background-position-x: 0;
     background-position-y: 0;
     overflow: scroll;
+    background-image: url(https://cdn2.vectorstock.com/i/1000x1000/09/71/coffee-stained-paper-vector-750971.jpg);
+    background-position: center;
+    background-size: 150%, 150%;
 }
 
 .results-container {
@@ -75,7 +82,7 @@
     left: 40%;
     top: 21%;
     width: 60%;
-    height: 70%;
+    height: 75%;
     background-color: antiquewhite;
     z-index: 1;
     flex-direction: column;
@@ -86,7 +93,9 @@
     border-width: 7px 0px 0px 3px;
     border-color: #717171;
     overflow-y: scroll;
-    box-shadow: inset 0 0 15px rgba(51, 18, 181, 0.75);
+    box-shadow: inset 0 0 15px rgba(89, 46, 4, 0.75);
+    background-image: url(https://media.istockphoto.com/id/1283615709/photo/old-brown-paper-parchment-background-design-with-distressed-vintage-stains-and-ink-spatter.jpg?b=1&s=612x612&w=0&k=20&c=dF3PPajNXtXXzoU4Qghwt9Yazu1KFNHuzmPWJ75eGCs=);
+    background-size: cover;
     /*resize: horizontal;*/
     /*resize: horizontal;*/
 
@@ -99,7 +108,7 @@
     height: 20%;
     z-index: 1;
     flex-direction: column;
-    background-color: antiquewhite;
+    /* background-color: antiquewhite; */
     justify-content: center;
     align-items: center;
     border-bottom: 7px solid #717171;
@@ -130,11 +139,13 @@
     display: flex;
     font-family: 'Kanit', sans-serif;
     flex-direction: column;
+    /* top: 70%;
+    height: 30%; */
     width: 80%;
     justify-content: start;
     font-size: 13px;
-    margin-top: 30px;
-    margin-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
     margin-right: 10px;
 }
 
@@ -168,7 +179,7 @@ label {
     height: 50%;
     z-index: -1;
     align-self: stretch;
-    background-color: lightgray;
+    background-color: rgba(189, 163, 123, 0.737);
     text-align: center;
     font-size: 21px;
     font-family: "Noteworthy";
@@ -186,10 +197,11 @@ label {
     gap: 10px;
 }
 
-#add-tag-button, .delete-button {
+#add-tag-button,
+.delete-button {
     background-color: none;
-    border-style:none;
-    background:none;
+    border-style: none;
+    background: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -197,9 +209,11 @@ label {
     font-weight: bold;
     color: #555555;
     transition: 0.5s;
+    ;
 }
 
-#add-tag-button:hover, .delete-button:hover {
+#add-tag-button:hover,
+.delete-button:hover {
     color: black;
     font-size: 26px;
     transition: 0.5s;
@@ -234,19 +248,20 @@ label {
 
 }
 
-.bottom-button-containers{
+/* .bottom-button-containers {
     position: relative;
-   /* left: 30%;
-    width: 40%;
-    border-top: 20%;*/
+    border-top: 20%;
     height: 7%;
     z-index: 2;
     border-style: solid;
-    border-width: 2px;
+    border-width: 1px;
     border-color: #1c1c1c;
-}
+    background-color: #ffd4b7;
+    box-shadow: 0 0 10px rgba(27, 7, 2, 0.5);
+    padding: 2pt
+} */
 
-.bottom-button-text {
+/* .bottom-button-text {
     height: 100%;
     z-index: -1;
     align-self: stretch;
@@ -257,11 +272,29 @@ label {
     font-weight: bold;
     padding: 2px;
 
+} */
+
+button {
+    display: flex;
+    padding: 2px 20px;
+    /* height: 6%; */
+    font-family: "Noteworthy";
+    font-weight: bold;
+    font-size: 14px;
+    background-color: #FFD4B7;
+    color: rgb(0, 0, 0);
+    border-color: #1C1C1C;
+    border-width: 1px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(27, 7, 2, 0.5);
+    /* top: 85%;
+    position: fixed; */
 }
 
 .tags-container {
     width: 80%;
-    overflow:wrap;
+    overflow: wrap;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-row: inherit;
@@ -286,7 +319,7 @@ label {
     background-color: #B2A59B;
     color: white;
     width: 90%;
-    height: 30%;
+    height: 40%;
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -300,6 +333,7 @@ label {
 
 #selected-title {
     height: 100px;
+    width: 100%;
     padding-bottom: 30px;
     overflow-y: scroll;
     font-size: 20px;
@@ -315,12 +349,12 @@ label {
 #selected-descr {
     background-color: none;
     height: 50%;
-    overflow:scroll;
+    /* overflow: scroll; */
     text-align: start;
 }
 
 .horizontal {
-    display:flex;
+    display: flex;
     gap: 10px;
     align-items: center;
 }
@@ -341,10 +375,10 @@ label {
 }
 
 .footer {
-    top:92%;
+    top: 95%;
     width: 100%;
     background-color: black;
-    height: 8%;
+    height: 5%;
     position: fixed;
 
 }

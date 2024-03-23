@@ -27,9 +27,11 @@ body {
 }
 
 .main-container {
-    background-color: antiquewhite;
-    height: 90%;
+    height: 95%;
     display: block;
+    background-image: url(https://cdn2.vectorstock.com/i/1000x1000/09/71/coffee-stained-paper-vector-750971.jpg);
+    background-size: cover; /* Resize the background image to fit the container */
+    background-position: center; /* Center the background image */
 }
 
 .title {
@@ -166,6 +168,6 @@ body {
 footer {
     background-color: black;
     width: 100%;
-    height: 10%;
+    height: 5%;
 }
 
