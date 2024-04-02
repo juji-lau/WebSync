@@ -19,7 +19,7 @@ novel_json_file_path = os.path.join(current_directory, 'novel_info.json')
 
 cossim_json_file_path = os.path.join(current_directory, 'webnovel_to_fanfic_cossim.json')
 
-
+"""========================== Gathering data: ============================="""
 def getKeyInfo(data,key):
     lst = []
     for i in range(len(data)):
@@ -61,8 +61,20 @@ app = Flask(__name__)
 app.secret_key = 'BAD_SECRET_KEY'
 CORS(app)
 
-
+""" ========================= Backend stuff: ============================"""
 def json_search(query):
+    """ Searches the webnovel database for a matching webnovel to the user typed query 
+    using string matching.  
+    Called for every character typed in the search bar.
+
+    Argument(s):
+    query:str - what the user types when searching for a webnovel
+
+    Return(s):
+    matches: Dict{ str: str} - a list of matching webnovel dictionaries to the query. 
+        Each dictionary includes the webovel title and description currently.  
+    """
+    print("a1. In json_search(query) in app.py          No app.route()")
     matches = []
     for i in range (len(novel_titles)):
         if query.lower() in novel_titles[i][0].lower() and query != "":
@@ -72,10 +84,16 @@ def json_search(query):
 
 @app.route("/fanfic-recs/")
 def recommendations(): 
+    """
+    Called when the user clicks "Show Reccommendations"
+    Links to showResults(title) in base.html
+    """
+    print("a2. In recomendations() app.py           app.route(/fanfic-recs/)")
     return webnovel_to_top10fics(session['title'])
 
 def webnovel_to_top10fics(webnovel_title):
     """
+    Called when the user clicks "Show Recommendations"
     input: webnovel_title --> the title of the user queried webnovel
     output: the top 10 fanfiction information. Can include: 
         - fanfic_id
@@ -83,6 +101,7 @@ def webnovel_to_top10fics(webnovel_title):
         - descriptions
         - etc.
     """
+    print("a3. In webnovel_to_top10fanfictions() app.py         No app.route()")
     webnovel_index = webnovel_title_to_index[webnovel_title]
     sorted_fanfics_tuplst = cossims[str(webnovel_index)]
     top_10 = sorted_fanfics_tuplst[:10]
@@ -100,6 +119,7 @@ def webnovel_to_top10fics(webnovel_title):
 
 @app.route("/")
 def home():
+    print("a4. In home() in app.py          app.route(/)")
     print(novel_titles[0])
     session['title'] = novel_titles[0][0]
     session['title-index'] = 0
@@ -109,34 +129,29 @@ def home():
 selectedNovel = ""
 @app.route("/results/")
 def results():
+    """ Called when the user clicks the --> arrow on the home page."""
+    print("a5. In results() in app.py           app.route(/results)")
     session['tags'] = None
     return render_template('base.html',title="sample html")
 
 @app.route("/episodes")
 def episodes_search():
+    """
+    Gets the user typed query, and calls json_search to return relevant webnovels.
+    Links to function filterText(id) in home.html.
+    """
+    print("a6. In episodes_search() in app.py.          app.route(/episodes)")
     text = request.args.get("title")
     return json_search(text)
-    #Return a List (dictionary: { title, description })
-    # list_dicts = []
-
-    # novel_dicts = []
-    # for novel in novel_titles:
-    #     novel_dicts.append({'text': novel})
-    # tup_list = edit_distance_search(text, novel_dicts, insertion_cost, deletion_cost, substitution_cost)
-    # print(tup_list[0])
-    # for tup in tup_list:
-    #     print(tup)
-    #     score = tup[0]
-    #     title = tup[1]
-    #     # Create a dictionary for each tuple
-    #     dict_title = {'title': title, 'score': score}
-    #     # Append the dictionary to the list
-    #     list_dicts.append(dict_title)
-    # return list_dicts
 
 
 @app.route("/setNovel")
 def setNovel():
+    """ 
+    Returns the user selected wbenovel.
+    Links to function titleButtonEventListener(e) in home.html 
+    """
+    print("a7. In setNovel() in app.py          app.route(/setNovel)")
     selectedNovel = request.args.get("title")
     session['title'] = request.args.get("title")
     session['title-index'] = novel_title_to_index[selectedNovel]
@@ -145,6 +160,20 @@ def setNovel():
 
 @app.route("/getNovel")
 def getNovel():
+    """
+    Retrieves the selected webnovel title, author, description, and genres from the second page.
+    Links to function setup() in base.html
+    Called as soon as user enters the second page
+
+    Returns: 
+    returnDict: Dict{
+        title: webnovel title
+        descr: webnovel description
+        author: The first listed author of the webnovel
+        genres: All the genres of the webnovel
+    }
+    """
+    print("a8. In getNovel() in app.py          app.route(/getNovel)")
     index = session['title-index']
     returnDict = {'title': novel_titles[index],
                   'descr':novel_descriptions[index],
@@ -153,24 +182,30 @@ def getNovel():
     return returnDict
 
 @app.route("/addTag")
+# whenever the user adds a tag, this is called
 def addTag():
-    print("add")
+    """ Links to function addTag(e) in home.html"""
+    print("a9. in addTag() in app.py            app.route(/addTag")
     newTag = request.args.get("tag")
+    # If a user adds more than one tag, including empty tags
     if session.get('tags') != None:
-        print("hi")
+        print("OooooOoooooooo")
         session['tags'].append(newTag)
+    # when the user adds the first tag, including empty tags
     else:
         session['tags'] = []
+        print("BYEEEEEEEEEE")
         session['tags'].append(newTag)
     session.modified = True
     return {'tags': newTag}
 
 @app.route("/removeTag")
 def removeTags():
-    print("remove")
+    """ Links to function addTag(e) in home.html """
+    print("a10. in removeTags() in app.py().            app.route(/removeTag) ")
     tag = request.args.get("tag")
-    print(tag)
-    print(session['tags'])
+    print("Tag removed: ", tag)
+    print("Current tags: ", session['tags'])
     session['tags'].remove(tag)
     print(session['tags'])
     session.modified = True

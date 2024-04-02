@@ -7,12 +7,38 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
     rel="stylesheet">
 
-<body onload="setup()">
+<!-- Set up the second page by displyaing the selected webnovel, info, and query boxes. -->
 
+<body onload="setup()">
     <div class="full-body-container">
         <div class="header-container">
             <h1 class="title"> WebSync </h1>
             <h4 class="subtitle"> find fan fictions that match your favorite web novels!</h4>
+            <!-- Tag interface:  -->
+            <div class="input-tags">
+                <label>
+                    Tags:
+                </label>
+                <div class="horizontal-input">
+                    <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image"/>
+                    <input class="search-bar" id="tags-search">
+                    <button id="add-tag-button"> + </button>
+                    </input>
+                </div>
+            </div>
+            <div class="tags-container"></div>
+
+            <!-- Popularity bar interface -->
+            <div class="input-popularity">
+                <label>
+                    Popularity:
+                </label>
+                <div id="slideContainer">
+                    <div id="sliderValue">350</div>
+                    <input type="range" min="350" max="600" value="1" id="size-slider">
+                </div>
+            </div>
+            <!-- search container end div -->
         </div>
         <div class="solidline"> </div>
         <div class="results-container">
@@ -23,148 +49,130 @@
             </div>
             <div id="answer-box">
             </div>
-            <!-- <div class="bottom-button-containers">
-                    <div class="bottom-button-text">
-                        Show More...
-                    </div>
-                </div> -->
         </div>
-        <div class="search-container">
-            <div class="novel-info-container">
-                <div id="selected-title"></div>
-                <div class="horizontal">
-                    <label> Author: </label>
-                    <div id="selected-author"></div>
-                </div>
-                <div class="group">
-                    <label>
-                        Genres:
-                    </label>
-                    <div id="genres-container">
-
-                    </div>
-                </div>
-                <div class="group">
-                    <label>Description: </label>
-                    <div id="selected-descr"></div>
+        <!-- <div class="novel-container"> -->
+        <div class="novel-info-container">
+            <div id="selected-title"></div>
+            <div class="horizontal">
+                <label style="padding-left: 10px; font-size: 17px"><b>Author: </b></label>
+                <div id="selected-author"></div>
+            </div>
+            <div class="novel-info-group">
+                <label style="font-size: 17px;"><b>
+                    Genres: 
+                </b></label>
+                <div id="genres-container">
                 </div>
             </div>
-
-            <div class="input-group">
-                <label>
-                    Tags:
-                </label>
-                <div class="horizontal-input">
-                    <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
-                    <input class="search-bar" id="tags-search">
-                    <button id="add-tag-button"> + </button>
-                    </input>
-
-                </div>
+            <div class="novel-info-group">
+                <label style="font-size: 17px;"><b>Description: </b></label>
+                <div id="selected-descr"></div>
             </div>
-            <div class="tags-container"></div>
-            <div class="input-group">
-                <label>
-                    Popularity:
-                </label>
-                <div id="slideContainer">
-                    <div id="sliderValue">350</div>
-                    <input type="range" min="350" max="600" value="1" id="size-slider">
-                </div>
-            </div>
-            <button onclick="showResults()">Show Recommendations</button>
         </div>
+        <button onclick="showResults()">Show Recommendations</button>
+        <!-- </div> -->
         <div class="footer"></div>
-    </div>
 
-    <script>
 
-        function addTag(e) {
-            let inputTag = document.getElementById('tags-search').value;
-
-            let tagContainer = document.querySelector('.tags-container');
-
-            let newTag = document.createElement('div');
-            newTag.setAttribute("class", "tag");
-            let tagName = document.createElement('div');
-            tagName.setAttribute("class", "tag-name");
-            tagName.textContent = inputTag;
-            newTag.appendChild(tagName);
-            let deleteButton = document.createElement('button');
-            deleteButton.setAttribute("class", "delete-button");
-            deleteButton.setAttribute('id', inputTag)
-            deleteButton.textContent = "x";
-            deleteButton.addEventListener('click', () => {
-                tagContainer.removeChild(newTag);
-                fetch("/removeTag?" + new URLSearchParams({ tag: inputTag }).toString())
+        <script>
+            // Adds and removes tags
+            function addTag(e) {
+                console.log("in add tag");
+                let inputTag = document.getElementById('tags-search').value;
+                let tagContainer = document.querySelector('.tags-container');
+                let newTag = document.createElement('div');
+                newTag.setAttribute("class", "tag");
+                let tagName = document.createElement('div');
+                tagName.setAttribute("class", "tag-name");
+                tagName.textContent = inputTag;
+                newTag.appendChild(tagName);
+                let deleteButton = document.createElement('button');
+                deleteButton.setAttribute("class", "delete-button");
+                deleteButton.setAttribute('id', inputTag)
+                deleteButton.textContent = "x";
+                deleteButton.addEventListener('click', () => {
+                    tagContainer.removeChild(newTag);
+                    fetch("/removeTag?" + new URLSearchParams({ tag: inputTag }).toString())
+                        .then((response) => response.json())
+                        .then((data) => {
+                        })
+                });
+                newTag.appendChild(deleteButton);
+                tagContainer.appendChild(newTag);
+                fetch("/addTag?" + new URLSearchParams({ tag: inputTag }).toString())
                     .then((response) => response.json())
                     .then((data) => {
                     })
-            });
-            newTag.appendChild(deleteButton);
-            tagContainer.appendChild(newTag);
-            fetch("/addTag?" + new URLSearchParams({ tag: inputTag }).toString())
-                .then((response) => response.json())
-                .then((data) => {
-                })
-        }
-        function setup() {
-            fetch("/getNovel?")
-                .then((response) => response.json())
-                .then((data) => {
-                    let titleContainer = document.getElementById("selected-title")
-                    titleContainer.textContent = data['title'][0]
-                    let authorContainer = document.getElementById("selected-author")
-                    authorContainer.textContent = data['author']
-                    let descrContainer = document.getElementById("selected-descr")
-                    descrContainer.textContent = data['descr']
-                    let genres = data['genres']
-                    let genreContainer = document.getElementById("genres-container")
-                    if (genres.length > 4) {
-                        for (var i = 0; i < 4; i++) {
-                            const genreTag = document.createElement('div');
-                            // console.log(genreTag)
-                            genreTag.setAttribute('class', 'genre-tag');
-                            genreTag.textContent = genres[i];
-                            genreContainer.appendChild(genreTag);
+            }
+
+            function setup() {
+                fetch("/getNovel?")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        let titleContainer = document.getElementById("selected-title")
+                        titleContainer.textContent = data['title'][0]
+                        let authorContainer = document.getElementById("selected-author")
+                        authorContainer.textContent = data['author']
+                        let descrContainer = document.getElementById("selected-descr")
+                        descrContainer.textContent = data['descr']
+                        let genres = data['genres']     // genres of the existing webnovel
+                        let genreContainer = document.getElementById("genres-container")
+                        if (genres.length > 4) {
+                            for (var i = 0; i < 4; i++) {
+                                const genreTag = document.createElement('div');
+                                // console.log(genreTag)
+                                genreTag.setAttribute('class', 'genre-tag');
+                                genreTag.textContent = genres[i];
+                                genreContainer.appendChild(genreTag);
+                            }
+                        } else {        // just display all existing tags
+                            genres.forEach((genre) => {
+                                const genreTag = document.createElement('div');
+                                // console.log(genreTag)
+                                genreTag.setAttribute('class', 'genre-tag');
+                                genreTag.textContent = genre;
+                                genreContainer.appendChild(genreTag);
+                            })
                         }
-                    } else {
-                        genres.forEach((genre) => {
-                            const genreTag = document.createElement('div');
-                            // console.log(genreTag)
-                            genreTag.setAttribute('class', 'genre-tag');
-                            genreTag.textContent = genre;
-                            genreContainer.appendChild(genreTag);
-                        })
-                    }
-                })
-            let addTagButton = document.getElementById('add-tag-button');
-            addTagButton.addEventListener('click', addTag);
-        }
-        function answerBoxTemplate(title, titleDesc) {
-            return `<div class=''>
+                    })
+                // allows users to input tags
+                let addTagButton = document.getElementById('add-tag-button');
+                //console.log("called document.getElementById('add-tag-button')")
+                addTagButton.addEventListener('click', addTag);
+                //console.log("called addTagButton.addEventListener('click', addTag);")
+            }
+
+
+            function answerBoxTemplate(title, titleDesc) {
+                //console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
+                return `<div class=''>
                     <h3 class='fanfic-title'>${title}</h3>
                     <p class='fanfic-desc'>${titleDesc}</p>
                 </div>`
-        }
+            }
 
-        function sendFocus(id) {
-            document.getElementById(id).focus()
-        }
+            function sendFocus(id) {
+                //console.log("b4. in sendFocus(id) in base.html")
+                document.getElementById(id).focus()
+            }
 
-        function showResults(title) {
-            document.getElementById("answer-box").innerHTML = ""
+            function showResults(title) {
+                //console.log("b5. in showResults(title) in base.html")
+                document.getElementById("answer-box").innerHTML = ""
 
-            fetch("/fanfic-recs/")
-                .then((response) => response.json())
-                .then((data) => data.forEach(row => {
-                    let tempDiv = document.createElement("div")
-                    tempDiv.innerHTML = answerBoxTemplate(row.title, row.description)
-                    document.getElementById("answer-box").appendChild(tempDiv)
-                }));
-        }
+                fetch("/fanfic-recs/")
+                    .then((response) => response.json())
+                    // console.log("1. fetched /fanfic-recs")
 
-    </script>
+                    .then((data) => data.forEach(row => {
+                        //console.log("2. fetched /fanfic-recs")
+                        let tempDiv = document.createElement("div")
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.description)
+                        document.getElementById("answer-box").appendChild(tempDiv)
+                    }));
+            }
+
+        </script>
 </body>
 
 </html>

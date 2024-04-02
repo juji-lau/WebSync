@@ -37,18 +37,22 @@
         <script>
             
             function titleButtonTemplate(title){
+               // console.log("h1. in titleButtonTemplate(title) in home.html")
                 let titleButton = document.createElement('button');
                 titleButton.textContent = title;
                 titleButton.setAttribute("class","title-button")
                 titleButton.addEventListener("click", titleButtonEventListener)
-                console.log(titleButton)
+               // console.log(titleButton)
                 return titleButton;
             }
 
             function titleButtonEventListener(e){
+               // console.log("h2. in titleButtonEventListener(e) in home.html")
                 fetch("/setNovel?"+new URLSearchParams({ title: e.target.textContent}).toString())
                 .then((response) => response.json())
+               // console.log("1. fetched /setNovel?")
                 .then((data) => {
+                  //  console.log("2. fetched /setNovel?")
                     titleContainer = document.getElementById("selected-title")
                     titleContainer.textContent = data['title']
                     let input = document.getElementById('web-novel-search')
@@ -56,12 +60,16 @@
                     filterText('web-novel-search')
                 })
             }
+
             function filterText(id){
+               // console.log("h2. in filterText(id) in home.html")
                 var count = 0;
                 document.getElementById("button-box").innerHTML = ""
                 fetch("/episodes?" + new URLSearchParams({ title: document.getElementById(id).value }).toString())
                 .then((response) => response.json())
+               // console.log("1. fetched /episodes?")
                 .then((data) => data.forEach(row => {
+                   // console.log("2. fetched /episodes?")
                     if (count < 5){
                         document.getElementById("button-box").appendChild(titleButtonTemplate(row.title))
                         count++;
@@ -72,6 +80,7 @@
             }
 
             function sendFocus(id){
+               // console.log("h3. in sendFocus(id) in home.html")
                 document.getElementById(id).focus()
             }
 

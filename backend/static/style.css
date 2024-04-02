@@ -14,7 +14,7 @@
     width: 100%;
     height: 19%;
     box-shadow: 0 0 10px rgba(48, 43, 66, 0.5);
-    z-index: 2;
+    z-index: -2;
     overflow: hidden;
     /* Prevent content from overflowing */
 
@@ -39,50 +39,208 @@
     z-index: -1;
 }
 
+.header-container {
+    display: flex;
+    /* position: fixed; */
+    position: fixed;
+    width: 100%;
+    height: 20%;
+    z-index: 2;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: inset 0 0 20px rgba(150, 107, 100, 0.75);
+    padding-top: 20px;
+}
+
+.title {
+    position: absolute;
+
+    top: 15%;
+    left: 40%;
+
+    font-family: "Noteworthy";
+    font-size: 50px;
+    font-weight: 600;
+    text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.75);
+    line-height: 0;
+}
+
+.subtitle {
+    position: absolute;
+
+    font-family: shoreline-font;
+    top: 45%;
+    left: 35%;
+    font-size: 14px;
+    font-weight: 30;
+    color: black;
+    line-height: 0;
+    padding-bottom: 20px
+}
+
+.input-tags {
+    position: absolute;
+    align-items: flex-start;
+    display: flex;
+    z-index: 3;
+    flex-direction: column;
+    justify-content: start;
+
+    width: 16%;
+    left: 5%;
+    height: 20%;
+    top: 60%;
+    margin-top: 10px;
+    margin-right: 20px;
+    margin-bottom: 0px;
+
+    background-color: rgba(125, 79, 36, 0.659);
+    /* z index must be 3 or more for the tags button to work */
+    font-family: 'Kanit', sans-serif;
+    font-size: 13px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: black;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.75);
+
+
+}
+
+.horizontal-input {
+    align-items: baseline;
+    position: absolute;
+
+    width: 65%;
+    left: 20%;
+    background-color: none;
+    box-shadow: inset;
+    display: flex;
+}
+
 .search-bar {
-    width: 70%;
+    width: 60%;
+    left: 83%;
+    padding-right: 10px;
     background: none;
     border-width: 0px 0px 3px 0px;
+    border-color: white;
+    z-index: 6;
 }
 
 .search-bar:focus {
     outline: none;
     background: none;
+    border-color: white;
     border-width: 0px 0px 3px 0px;
+    z-index: 6;
 }
 
-.search-container {
-    display: flex;
-    left: 0%;
-    top: 21%;
-    width: 40%;
-    height: 75%;
-    z-index: 1;
-    flex-direction: column;
+.tags-container {
+    position: absolute;
+    width: 65%;
+    left: 22%;
+    height: 21%;
+    top: 65%;
+    background-color: none;
+    overflow: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-column-gap: 5px;
+    box-sizing: border-box;
+    grid-row: inherit;
+    justify-content: start;
     align-items: center;
-    justify-content: flex-start;
-    position: fixed;
-    border-style: solid;
-    border-width: 7px 0 0 0;
-    border-color: #717171;
-    background-color: antiquewhite;
-    background-size: cover;
-    background-position: bottom, bottom;
-    background-repeat: no-repeat, no-repeat;
-    background-position-x: 0;
-    background-position-y: 0;
-    overflow: scroll;
-    background-image: url(https://cdn2.vectorstock.com/i/1000x1000/09/71/coffee-stained-paper-vector-750971.jpg);
-    background-position: center;
-    background-size: 150%, 150%;
+    gap: 5px 10px;
+    z-index: 2;
 }
+
+.input-popularity {
+    position: absolute;
+
+    display: flex;
+    font-family: 'Kanit', sans-serif;
+    flex-direction: column;
+    width: 25%;
+    left: 70%;
+    height: 20%;
+    top: 40%;
+    z-index: 2;
+    justify-content: start;
+    font-size: 13px;
+    margin-top: 10px;
+    margin-right: 20px;
+}
+
+label {
+    /* align-items: center; */
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    z-index: 6;
+}
+
+
+.small-image {
+    height: 20px;
+    width: 20px;
+}
+
+.tag {
+    color: #FAEED1;
+    background-color: #B2A59B;
+    border-color: black;
+    border-width: 1px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 10px;
+    align-items: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-family: 'Kanit', sans-serif;
+}
+
+#add-tag-button,
+.delete-button {
+    width: 3.5%;
+    left: 17.5%;
+    top: 14.5%;
+    height: 3.5%;
+    border-style: none;
+    background: whitesmoke;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: #555555;
+    transition: 0.5s;
+    z-index: 6;
+}
+
+#add-tag-button:hover,
+.delete-button:hover {
+    color: black;
+    font-size: 26px;
+    transition: 0.5s;
+    font-weight: bolder;
+    transform: translateY(-6px);
+    transform: translateX(-3px);
+    z-index: 6;
+}
+
+.single-container {
+    display: flex;
+}
+
+/* ======================== Results Container: ============================== */
 
 .results-container {
+    position: absolute;
     display: flex;
     left: 40%;
     top: 21%;
     width: 60%;
-    height: 75%;
+    height: 77.5%;
     background-color: antiquewhite;
     z-index: 1;
     flex-direction: column;
@@ -96,69 +254,10 @@
     box-shadow: inset 0 0 15px rgba(89, 46, 4, 0.75);
     background-image: url(https://media.istockphoto.com/id/1283615709/photo/old-brown-paper-parchment-background-design-with-distressed-vintage-stains-and-ink-spatter.jpg?b=1&s=612x612&w=0&k=20&c=dF3PPajNXtXXzoU4Qghwt9Yazu1KFNHuzmPWJ75eGCs=);
     background-size: cover;
-    /*resize: horizontal;*/
-    /*resize: horizontal;*/
+    /* padding-left: -5%;
+    padding-right: -15%;
+    box-sizing: border-box;*/
 
-}
-
-.header-container {
-    display: flex;
-    position: fixed;
-    width: 100%;
-    height: 20%;
-    z-index: 1;
-    flex-direction: column;
-    /* background-color: antiquewhite; */
-    justify-content: center;
-    align-items: center;
-    border-bottom: 7px solid #717171;
-    box-shadow: inset 0 0 20px rgba(150, 107, 100, 0.75);
-    padding-top: 20px;
-}
-
-.title {
-    top: 50%;
-    transform: translateY(-60%);
-    font-family: "Noteworthy";
-    font-size: 50px;
-    font-weight: 600;
-    text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.75);
-    line-height: 0;
-}
-
-.subtitle {
-    font-family: shoreline-font;
-    font-size: 14px;
-    font-weight: 30;
-    color: black;
-    line-height: 0;
-    padding-bottom: 20px;
-}
-
-.input-group {
-    display: flex;
-    font-family: 'Kanit', sans-serif;
-    flex-direction: column;
-    /* top: 70%;
-    height: 30%; */
-    width: 80%;
-    justify-content: start;
-    font-size: 13px;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    margin-right: 10px;
-}
-
-label {
-    font-weight: 700;
-    display: flex;
-    justify-content: space-between;
-}
-
-
-.small-image {
-    height: 20px;
-    width: 20px;
 }
 
 .results-title-container {
@@ -172,7 +271,7 @@ label {
     border-left-color: #555555;
     border-bottom-color: #555555;
     border-bottom-left-radius: 3pt;
-    border-bottom-right-radius: 3pt
+    border-bottom-right-radius: 3pt;
 }
 
 .results-title {
@@ -188,49 +287,11 @@ label {
 
 }
 
-.horizontal-input {
-    padding: 10px;
-    background-color: none;
-    border-radius: 4px;
-    box-shadow: inset;
-    display: flex;
-    gap: 10px;
-}
-
-#add-tag-button,
-.delete-button {
-    background-color: none;
-    border-style: none;
-    background: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    font-weight: bold;
-    color: #555555;
-    transition: 0.5s;
-    ;
-}
-
-#add-tag-button:hover,
-.delete-button:hover {
-    color: black;
-    font-size: 26px;
-    transition: 0.5s;
-    font-weight: bolder;
-    transform: translateY(-6px);
-    transform: translateX(-3px);
-}
-
-.single-container {
-    display: flex;
-}
-
 #answer-box {
     display: grid;
     margin-top: 50px;
     margin-left: 40px;
-    margin-right: 30px;
+    margin-right: 20px;
     margin-bottom: 30px;
     overflow: scroll;
 }
@@ -245,39 +306,18 @@ label {
     font-family: 'Montserrat', sans-serif;
     color: darkslategray;
     font-size: small;
-
 }
 
-/* .bottom-button-containers {
-    position: relative;
-    border-top: 20%;
-    height: 7%;
-    z-index: 2;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #1c1c1c;
-    background-color: #ffd4b7;
-    box-shadow: 0 0 10px rgba(27, 7, 2, 0.5);
-    padding: 2pt
-} */
-
-/* .bottom-button-text {
-    height: 100%;
-    z-index: -1;
-    align-self: stretch;
-    background-color: #FFD4B7;
-    text-align: center;
-    font-size: 8px;
-    font-family: "Noteworthy";
-    font-weight: bold;
-    padding: 2px;
-
-} */
+/* ======================================================================== */
 
 button {
+    position: fixed;
+    height: 6%;
+    left: 10%;
+    top: 87%;
     display: flex;
-    padding: 2px 20px;
-    /* height: 6%; */
+    margin: 2px, 10px;
+    align-items: center;
     font-family: "Noteworthy";
     font-weight: bold;
     font-size: 14px;
@@ -288,76 +328,79 @@ button {
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 0 10px rgba(27, 7, 2, 0.5);
-    /* top: 85%;
-    position: fixed; */
+    z-index: 3;
 }
 
-.tags-container {
-    width: 80%;
-    overflow: wrap;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-row: inherit;
-    justify-content: start;
-    align-items: center;
-    gap: 10px 20px;
-}
-
-.tag {
-    color: #FAEED1;
-    background-color: #B2A59B;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    border-radius: 10px;
-    align-items: center;
-    padding: 5px;
-    font-family: 'Kanit', sans-serif;
-}
+/* =============== WebNovel Info container: =========================== */
 
 .novel-info-container {
-    background-color: #B2A59B;
-    color: white;
-    width: 90%;
-    height: 40%;
+    position: fixed;
     display: flex;
+    box-sizing: border-box;
+    left: 0%;
+    top: 21%;
+    left: 0%;
+    width: 40%;
+    height: 77%;
+    z-index: 3;
+
     flex-direction: column;
     justify-content: start;
     align-items: start;
     text-align: center;
-    padding: 5% 5%;
+    border-style: solid;
     overflow: scroll;
-    gap: 10px;
+    /* padding-left: 2.5%;
+    padding-right: 2.5%; */
+
+    border-width: 7px 0 0 0;
+    border-color: #717171;
+    background-color: #B2A59B;
+    color: white;
     font-family: 'Kanit', sans-serif;
 }
 
-#selected-title {
-    height: 100px;
-    width: 100%;
-    padding-bottom: 30px;
-    overflow-y: scroll;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.group {
+.novel-info-group {
     display: block;
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+    box-sizing: border-box;
+
     width: 100%;
     height: 50%;
-}
-
-#selected-descr {
-    background-color: none;
-    height: 50%;
-    /* overflow: scroll; */
-    text-align: start;
+    overflow: scroll;
+    z-index: 2;
+    /* background: purple; */
 }
 
 .horizontal {
     display: flex;
+
     gap: 10px;
     align-items: center;
+    overflow: scroll;
 }
+
+#selected-author {
+    width: 100%;
+    font-size: 17px;
+}
+
+#selected-title {
+    height: 100px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 40px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+#selected-descr {
+    /* background-color:red; */
+    text-align: start;
+}
+
 
 #genres-container {
     display: grid;
@@ -374,11 +417,14 @@ button {
     color: #B2A59B;
 }
 
+/* ========================================================================== */
+
 .footer {
-    top: 95%;
+    top: 97%;
     width: 100%;
     background-color: black;
-    height: 5%;
+    height: 3%;
     position: fixed;
+    z-index: 3;
 
 }
