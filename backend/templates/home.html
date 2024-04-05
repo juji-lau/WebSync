@@ -1,89 +1,93 @@
 <!doctype html>
 <html>
-    <title>{% block title %}{% endblock %} - Flaskr</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='home-style.css') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
-    <body>
-        <div class="main-container">
-            <div class="title-container">
-                <h1 class="title"> WebSync </h1>
-                <h4 class="description"> find fan fictions that match your favorite web novels!</h4>
-            </div>
-            <div class="selected-novel-group">
-                    <h4> Select a novel! </h4>
-                    <div id="selected-title"></div>
-            </div>
-            <div class="search-container">
+<title>{% block title %}{% endblock %} - Flaskr</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='home-style.css') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
+    rel="stylesheet">
 
-                <div class="input-group" onClick="sendFocus('web-novel-search')">
-                    <div class="horizontal">
-                        <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
-                        <input class="search-bar" id="web-novel-search" onkeyup="filterText('web-novel-search')"></input>
-                    </div>
-                </div>
-                <div id="button-box"></div>
-                
-            </div>
-            <a href="results" class="next">
-                <button class="next-button"> 
-                    <img src="{{ url_for('static', filename='images/rightarrow.svg') }}" class="arrow small-icon black-icon" /> 
-                </button>
-            </a>
+<body>
+    <div class="main-container">
+        <div class="title-container">
+            <div class="title"> WebSync </div>
         </div>
-        <footer></footer>
+        <div class="description-container">
+            <div class="description"> find fan fictions that match your favorite web novels!</div>
+        </div>
+        <div class="prompt-container">
+            <div class="prompt"> Seclect a novel!</div>
+        </div>
+        <div class="selected-novel-group">
+            <div id="selected-title"></div>
+        </div>
+        <div class="search-container">
+            <div class="horizontal" onClick="sendFocus('web-novel-search')">
+                <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
+                <input class="search-bar" id="web-novel-search" onkeyup="filterText('web-novel-search')"></input>
+            </div>
+            <div id="button-box"></div>
+        </div>
+        <a href="results" class="next">
+            <button class="next-button">
+                <img src="{{ url_for('static', filename='images/rightarrow.svg') }}"
+                    class="arrow small-icon black-icon" />
+            </button>
+        </a>
+    </div>
+    <footer></footer>
 
-        <script>
-            
-            function titleButtonTemplate(title){
-               // console.log("h1. in titleButtonTemplate(title) in home.html")
-                let titleButton = document.createElement('button');
-                titleButton.textContent = title;
-                titleButton.setAttribute("class","title-button")
-                titleButton.addEventListener("click", titleButtonEventListener)
-               // console.log(titleButton)
-                return titleButton;
-            }
+    <script>
 
-            function titleButtonEventListener(e){
-               // console.log("h2. in titleButtonEventListener(e) in home.html")
-                fetch("/setNovel?"+new URLSearchParams({ title: e.target.textContent}).toString())
+        function titleButtonTemplate(title) {
+            // console.log("h1. in titleButtonTemplate(title) in home.html")
+            let titleButton = document.createElement('button');
+            titleButton.textContent = title;
+            titleButton.setAttribute("class", "title-button")
+            titleButton.addEventListener("click", titleButtonEventListener)
+            // console.log(titleButton)
+            return titleButton;
+        }
+
+        function titleButtonEventListener(e) {
+            // console.log("h2. in titleButtonEventListener(e) in home.html")
+            fetch("/setNovel?" + new URLSearchParams({ title: e.target.textContent }).toString())
                 .then((response) => response.json())
-               // console.log("1. fetched /setNovel?")
+                // console.log("1. fetched /setNovel?")
                 .then((data) => {
-                  //  console.log("2. fetched /setNovel?")
+                    //  console.log("2. fetched /setNovel?")
                     titleContainer = document.getElementById("selected-title")
                     titleContainer.textContent = data['title']
                     let input = document.getElementById('web-novel-search')
                     input.value = ""
                     filterText('web-novel-search')
                 })
-            }
+        }
 
-            function filterText(id){
-               // console.log("h2. in filterText(id) in home.html")
-                var count = 0;
-                document.getElementById("button-box").innerHTML = ""
-                fetch("/episodes?" + new URLSearchParams({ title: document.getElementById(id).value }).toString())
+        function filterText(id) {
+            // console.log("h2. in filterText(id) in home.html")
+            var count = 0;
+            document.getElementById("button-box").innerHTML = ""
+            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById(id).value }).toString())
                 .then((response) => response.json())
-               // console.log("1. fetched /episodes?")
+                // console.log("1. fetched /episodes?")
                 .then((data) => data.forEach(row => {
-                   // console.log("2. fetched /episodes?")
-                    if (count < 5){
+                    // console.log("2. fetched /episodes?")
+                    if (count < 5) {
                         document.getElementById("button-box").appendChild(titleButtonTemplate(row.title))
                         count++;
-                    }else{
+                    } else {
                         return;
                     }
                 }));
-            }
+        }
 
-            function sendFocus(id){
-               // console.log("h3. in sendFocus(id) in home.html")
-                document.getElementById(id).focus()
-            }
+        function sendFocus(id) {
+            // console.log("h3. in sendFocus(id) in home.html")
+            document.getElementById(id).focus()
+        }
 
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>
