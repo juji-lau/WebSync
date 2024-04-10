@@ -7,11 +7,14 @@ import json
 import re 
 from tqdm import tqdm
 
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS as stop_words
+
 # Note: popularity score = (kudos * chapters) / hits
 # TODO: currently webnovel["title"] gives a list of associated webnovel titles\
 # right now, we are returning webnovel["title"][0].  Find a way to \
 # incorporate all associated titles
 # TODO: edit distance search for webnovels
+# TODO: tokenize fanfics and webovels using TfidfVectorizer for stop words, min df, and max df
 
 """
 fic_id_to_index: maps the fanfiction id to a zero-based index. 
@@ -97,7 +100,14 @@ def tokenize(text: str) -> List[str]:
     List[str]
         A list of strings representing the words in the text.
     """
-    return re.findall("[A-Za-z]+", text.lower())
+    tokenized_with_stop_words = re.findall("[A-Za-z]+", text.lower())
+    tokenized = []
+    for token in tokenized_with_stop_words:
+        if token in stop_words: 
+            pass
+        else:
+            tokenized.append(token)
+    return tokenized
 
 # files is a list of dictionaries.  List[Dict(fanfic_id, description)]
 def tokenize_fanfics(tokenize_method: Callable[[str], List[str]], 
@@ -402,30 +412,16 @@ def main():
     fanfic_idf = compute_idf(fanfic_inverted_index, n_fanfics)
     fanfic_norms = compute_doc_norms(fanfic_inverted_index, fanfic_idf, n_fanfics)
 
-    cossims = build_sims_cos(webnovels_tokenized[:5], fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
+    # Comment this when actually running
+    # cossims = build_sims_cos(webnovels_tokenized[:5], fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
+    # file = 'test.json'
 
-    # # Some Example Code
-    # print("Web Novel")
-    # print(webnovels[0]['titles'])
-    # print(webnovels[0]['description'])
-    # print()
-    # print("Fanfic 1")
-    # print(fanfics[cossims[0][0][1]]['id'])
-    # print(fanfics[cossims[0][0][1]]['title'])
-    # print(fanfics[cossims[0][0][1]]['description'])
-    # print(fanfics[cossims[0][0][1]]['tags'])
-    # print()
-    # print("Fanfic 2")
-    # print(fanfics[cossims[0][1][1]]['id'])
-    # print(fanfics[cossims[0][1][1]]['title'])
-    # print(fanfics[cossims[0][1][1]]['description'])
-    # print(fanfics[cossims[0][1][1]]['tags'])
-
-    # index_to_fanfic_id and fanfic_id_to_index might not be necessary; look at previus example to see why
-
+    # Uncomment this when actually running
+    cossims = build_sims_cos(webnovels_tokenized, fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
     file = 'webnovel_to_fanfic_cossim.json'
+
     with open(file, 'w', encoding='utf-8') as f:
-        json.dump({'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'fanfic_id_to_index':fic_id_to_index, 'fanfics':fanfics}, f)
+        json.dump({'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'webnovel_title_to_index':webnovel_title_to_index}, f)
 
 if __name__ == "__main__":
     main()
