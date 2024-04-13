@@ -69,7 +69,7 @@
                 <div id="selected-descr"></div>
             </div>
         </div>
-        <button onclick="showResults()">Show Recommendations</button>
+        <button onclick="showResults()" class="show-rec-button">Show Recommendations</button>
         <!-- </div> -->
         <div class="footer"></div>
 
@@ -88,7 +88,7 @@
                 newTag.appendChild(tagName);
                 let deleteButton = document.createElement('button');
                 deleteButton.setAttribute("class", "delete-button");
-                deleteButton.setAttribute('id', inputTag)
+                // deleteButton.setAttribute('id', inputTag)
                 deleteButton.textContent = "x";
                 deleteButton.addEventListener('click', () => {
                     tagContainer.removeChild(newTag);

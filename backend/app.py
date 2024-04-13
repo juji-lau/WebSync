@@ -87,7 +87,7 @@ def json_search(query):
     return matches
 
 def user_description_search(user_description):
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(stop_words='english')
     docs_tfidf = vectorizer.fit_transform(novel_descriptions)
 
     svd = TruncatedSVD(n_components=50)
@@ -96,8 +96,13 @@ def user_description_search(user_description):
     user_svd = svd.transform(user_tfidf)
     
     sims = cosine_similarity(user_svd, docs_svd).flatten()
-    result_index = np.argsort(sims)[-1]
-    return {'title': novel_titles[result_index][0], 'description': novel_descriptions[result_index]}
+    result_indices = np.argsort(sims)
+    matches = []
+    for i in range(1,6):
+        result_index = result_indices[-i]
+        matches.append({'title': novel_titles[result_index][0], 
+                        'descr': novel_descriptions[result_index]})
+    return matches
 
 
 @app.route("/fanfic-recs/")
@@ -152,16 +157,25 @@ def results():
     session['tags'] = None
     return render_template('base.html',title="sample html")
 
-@app.route("/episodes")
-def episodes_search():
+@app.route("/titleSearch")
+def titleSearch():
     """
     Gets the user typed query, and calls json_search to return relevant webnovels.
     Links to function filterText(id) in home.html.
     """
-    print("a6. In episodes_search() in app.py.          app.route(/episodes)")
-    text = request.args.get("title")
+    print("a6. In titleSearch() in app.py.          app.route(/titleSearch)")
+    text = request.args.get("inputText")
     return json_search(text)
 
+@app.route("/descrSearch")
+def descrSearch():
+    """
+    Gets the user typed query, and calls json_search to return relevant webnovels.
+    Links to function filterText(id) in home.html.
+    """
+    print("a6. In descrSearch() in app.py.          app.route(/descrSearch)")
+    text = request.args.get("inputText")
+    return user_description_search(text)
 
 @app.route("/setNovel")
 def setNovel():

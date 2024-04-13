@@ -199,8 +199,15 @@ label {
     font-family: 'Kanit', sans-serif;
 }
 
-#add-tag-button,
 .delete-button {
+    border-color: black;
+    font-size: 10px;
+    background-color: red;
+    align-self: flex-end;
+
+}
+
+#add-tag-button {
     width: 3.5%;
     left: 17.5%;
     top: 14.5%;
@@ -214,7 +221,7 @@ label {
     font-weight: bold;
     color: #555555;
     transition: 0.5s;
-    z-index: 6;
+    z-index: 1;
 }
 
 #add-tag-button:hover,
@@ -225,7 +232,6 @@ label {
     font-weight: bolder;
     transform: translateY(-6px);
     transform: translateX(-3px);
-    z-index: 6;
 }
 
 .single-container {
@@ -310,7 +316,7 @@ label {
 
 /* ======================================================================== */
 
-button {
+.show-rec-button {
     position: fixed;
     height: 6%;
     left: 10%;
