@@ -5,6 +5,11 @@ from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
 import numpy as np
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.decomposition import TruncatedSVD
+
 from scratch import edit_distance_search
 from scratch import insertion_cost, deletion_cost, substitution_cost
 # ROOT_PATH for linking with all your files. 
@@ -80,6 +85,19 @@ def json_search(query):
         if query.lower() in novel_titles[i][0].lower() and query != "":
             matches.append({'title': novel_titles[i][0],'descr':novel_descriptions[i]})
     return matches
+
+def user_description_search(user_description):
+    vectorizer = TfidfVectorizer()
+    docs_tfidf = vectorizer.fit_transform(novel_descriptions)
+
+    svd = TruncatedSVD(n_components=50)
+    docs_svd = svd.fit_transform(docs_tfidf)
+    user_tfidf = vectorizer.transform([user_description])
+    user_svd = svd.transform(user_tfidf)
+    
+    sims = cosine_similarity(user_svd, docs_svd).flatten()
+    result_index = np.argsort(sims)[-1]
+    return {'title': novel_titles[result_index][0], 'description': novel_descriptions[result_index]}
 
 
 @app.route("/fanfic-recs/")

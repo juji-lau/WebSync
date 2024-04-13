@@ -6,8 +6,11 @@ from collections import defaultdict, Counter
 import json
 import re 
 from tqdm import tqdm
+from matplotlib import pyplot as plt
 
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS as stop_words
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS as stop_words, TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.decomposition import TruncatedSVD
 
 # Note: popularity score = (kudos * chapters) / hits
 # TODO: currently webnovel["title"] gives a list of associated webnovel titles\
@@ -27,6 +30,7 @@ fic_id_to_index = {}
 index_to_fic_id = {}
 webnovel_title_to_index = {}
 index_to_webnovel_title = {}
+fanfic_id_to_popularity = {}
 
 def get_fanfic_data():
     """"
@@ -137,6 +141,8 @@ def tokenize_fanfics(tokenize_method: Callable[[str], List[str]],
       # add to fic_id_to_index, and index_to_fic_id:
       fic_id_to_index[fanfic_id] = counter
       index_to_fic_id[counter] = fanfic_id
+      popularity = fanfic_dict['hits'] + fanfic_dict['kudos'] + fanfic_dict['comments'] + fanfic_dict['bookmarks']
+      fanfic_id_to_popularity[fanfic_id] = popularity
       counter+=1
     return tokenized_descriptions  
 
@@ -166,7 +172,6 @@ def tokenize_webnovels(tokenize_method: Callable[[str], List[str]],
       webnovel_title = webnovel_dict['titles'][0]
       webnovel_description = webnovel_dict['description']
       tokenized_descriptions.append({"index":counter, "tokenized_description":tokenize_method(webnovel_description)})
-      # add to fic_id_to_index, and index_to_fic_id:
       webnovel_title_to_index[webnovel_title] = counter
       index_to_webnovel_title[counter] = webnovel_title
       counter+=1
@@ -399,6 +404,56 @@ def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_nor
 
     return webnovel_sims
 
+def get_svd_tags(webnovel_data, fanfic_data, num_dims=1000, sim_threshold=0.35, min_doc_frequency=0.05, max_doc_frequency=0.9):
+    """
+    Retrieves only tags from the webnovel and fanfic data, then filters the tags using SVD to generate a smaller list of tags    
+   
+   Arguments
+    =========
+    webnovel_data: The webnovels dictionary
+    fanfic_data: The fanfic dictionary
+    num_dims: The number of tags we want the final tagset to contain
+    sim_threshold: Optional argument to decide at what threshold we combine tags
+    min_doc_frequency: [1, 0], min percentage of works a tag appears in
+    max_doc_frequency: [1, 0], max percentage of works a tag appears in; >= min_doc_frequency
+
+    Returns
+    =========
+    tags_list: list of valid tags that the user can enter of size num_dims
+    work2index: list of works, in order of the rows of the svd matrix
+    features: list of tags, in order of the columns of the svd matrix
+
+    """
+    # Gather all tags and associated works
+    work2index = []
+    all_tags = {}
+    for w in webnovel_data:
+        work2index.append(w["titles"][0])
+        all_tags.append({"title": w["titles"][0], "tags" : w["tags"]})
+    for f in fanfic_data: 
+        work2index.append(f["title"])
+        all_tags.append({"title": f["title"], "tags" : w["tags"]})
+
+    # make a tfidf matrix; dims = |works| x |tags|, where svd(i, j) = tf-idf score of tag j in work i
+    vec = TfidfVectorizer(max_df = max_doc_frequency*len(all_tags),
+                            min_df = min_doc_frequency*len(all_tags))
+    td_matrix = vec.fit_transform([x["tags"] for x in all_tags])    
+    terms = vectorizer.get_feature_names_out()
+    svd = TruncatedSVD(n_components=40)
+    docs = svd.fit_transform(tfidf)
+    query_tfidf = vec.transform([query])
+    query_vec = svd.transform(query_tfidf)
+    
+    sims = cosine_similarity(query_vec, docs).flatten()
+    indices = np.argsort(sims)[::-1]
+    indices = [idx for idx in indices if sims[idx] >= sim_threshold]
+    items = []
+    for idx in indices:
+        data[idx]["sim"] = sims[idx]
+        items.append(data[idx])
+    return items
+
+
 def main():
     fanfics = get_fanfic_data()
     webnovels = get_webnovel_data()
@@ -421,7 +476,7 @@ def main():
     file = 'webnovel_to_fanfic_cossim.json'
 
     with open(file, 'w', encoding='utf-8') as f:
-        json.dump({'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'webnovel_title_to_index':webnovel_title_to_index}, f)
+        json.dump({'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'webnovel_title_to_index':webnovel_title_to_index, 'fanfic_id_to_popularity':fanfic_id_to_popularity}, f)
 
 if __name__ == "__main__":
     main()
@@ -559,7 +614,7 @@ def edit_distance_search(
     for webnov_title_lst in msgs:
       webnovel_title = webnov_title_lst[0]
       #novel_title_ind = webnovel_title_to_index[webnov_title_lst[0]]
-     #print("HERES THE INDEX", novel_title_ind)
+      #print("HERES THE INDEX", novel_title_ind)
       score = edit_distance(query, webnovel_title, ins_cost_func, del_cost_func, sub_cost_func)
       lst_of_tups.append((score, webnovel_title))
 
