@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
 
-from scratch import edit_distance_search
+from scratch import edit_distance_search, filter_fanfics, get_svd_tags
 from scratch import insertion_cost, deletion_cost, substitution_cost
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
@@ -60,6 +60,7 @@ with open(cossim_json_file_path, 'r') as file:
     cossims = file_contents['cossims']
     webnovel_title_to_index = file_contents['webnovel_title_to_index']
     index_to_fanfic_id = file_contents['index_to_fanfic_id']
+    tags_list = file_contents['tags_list']
 
 app = Flask(__name__)
 
@@ -112,32 +113,36 @@ def recommendations():
     Links to showResults(title) in base.html
     """
     print("a2. In recomendations() app.py           app.route(/fanfic-recs/)")
-    return webnovel_to_top10fics(session['title'])
+    return webnovel_to_top_fics(session['title'], 49)
 
-def webnovel_to_top10fics(webnovel_title):
+def webnovel_to_top_fics(webnovel_title, num_fics):
     """
     Called when the user clicks "Show Recommendations"
-    input: webnovel_title --> the title of the user queried webnovel
-    output: the top 10 fanfiction information. Can include: 
+    inputs: 
+    webnovel_title --> the title of the user queried webnovel
+    num_fics: the number of results we output <50
+    outputs:
+    the top 10 fanfiction information. Can include: 
         - fanfic_id
         - fanfic_titles
         - descriptions
         - etc.
     """
-    print("a3. In webnovel_to_top10fanfictions() app.py         No app.route()")
+    print("a3. In webnovel_to_top_fanfictions() app.py         No app.route()")
     webnovel_index = webnovel_title_to_index[webnovel_title]
     sorted_fanfics_tuplst = cossims[str(webnovel_index)]
-    top_10 = sorted_fanfics_tuplst[:10]
-    top_10_fanfic_indexes = [t[1] for t in top_10]
-    top_10_fanfics = []
-    for i in top_10_fanfic_indexes:
+    top_n = sorted_fanfics_tuplst[:num_fics]
+    top_n_fanfic_indexes = [t[1] for t in top_n]
+    top_n_fanfics = []
+    for i in top_n_fanfic_indexes:
         fanfic_id = index_to_fanfic_id[str(i)]
         info_dict = {}
         info_dict["fanfic_id"] = fanfic_id                              # get fanfic id
         info_dict["description"] = fanfics[fanfic_id]['description']    # get description
         info_dict["title"] = fanfics[fanfic_id]["title"]                # get title
-        top_10_fanfics.append(info_dict)
-    return top_10_fanfics
+        top_n_fanfics.append(info_dict)
+    #top_10_fanfics = filter_fanfics(top_10_fanfics, user_input_tags_list)
+    return top_n_fanfics
     
 
 @app.route("/")
