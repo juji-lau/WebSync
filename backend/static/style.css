@@ -249,6 +249,12 @@ label {
 
 }
 
+.results-title {
+    text-align: center;
+    font-family: 'Kanit', sans-serif;
+    font-size: 30px;
+}
+
 .results-title-container {
     width: 100%;
     border-style: solid;
@@ -258,26 +264,29 @@ label {
     border-bottom-color: #555555;
     border-bottom-left-radius: 3pt;
     border-bottom-right-radius: 3pt;
-}
-
-.results-title {
-    align-self: stretch;
-    background-color: rgba(189, 163, 123, 0.737);
-    text-align: center;
-    font-size: 21px;
-    font-family: "Noteworthy";
-    font-weight: bold;
-    padding: 2px;
 
 }
 
 #answer-box {
-    display: grid;
+    display: flex;
     margin-top: 50px;
     margin-left: 40px;
     margin-right: 20px;
     margin-bottom: 30px;
     overflow: scroll;
+    flex-direction: column;
+    justify-content: start;
+    align-items: stretch;
+    gap: 20px;
+}
+
+.fanfic-box {
+    background-color: #FAEED1;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .fanfic-title {

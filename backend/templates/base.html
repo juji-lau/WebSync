@@ -145,19 +145,70 @@
             }
 
 
-            function answerBoxTemplate(title, titleDesc) {
-                //console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
-                return `<div class=''>
-                    <h3 class='fanfic-title'>${title}</h3>
-                    <p class='fanfic-desc'>${titleDesc}</p>
+            function answerBoxTemplate(fanfic) {
+                // console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
+                return `<div class='fanfic-box'>
+                    <div>
+                        <h3 class='fanfic-title'>${fanfic.title} by ${fanfic.author}</h3>
+                        <p class='fanfic-desc'>${fanfic.description}</p>
+                    </div>
+                    <div class='horizontal'> 
+                        <p class='fanfic-hits'> Hits: ${fanfic.hits}</p>
+                        <p class='fanfic-kudos'> Kudos: ${fanfic.kudos}</p>
+                    </div>
+                    <div class='answer-button-display'>
+                        <button onclick='query_id("${fanfic.fanfic_id}")' class='answer-info-button'>Info</button>
+                        <button onclick='document.getElementById("${fanfic.fanfic_id}").remove()' class='answer-remove-button'>Remove</button>
+                    </div>
                 </div>`
+            }
+
+            // Info box
+            function info_box(fanfic) {
+                return `<div id='${fanfic.fanfic_id}-extra-info' style='border:1px solid black;padding:10px;border-radius:5px'>
+                            <div class='fanfic-tags'>
+                            </div>
+                </div>
+                `
             }
 
             function sendFocus(id) {
                 //console.log("b4. in sendFocus(id) in base.html")
                 document.getElementById(id).focus()
             }
+            
+            // function addResult(fanfic){
+            //     let resultBox = document.createElement('div');
+            //     resultBox.setAttribute('class', 'result-box');
+                
+            //     let resultTitle = document.createElement('h3');
+            //     resultTitle.textContent = fanfic.title;
+            //     resultTitle.setAttribute('class', 'result-title');
+            //     resultBox.appendChild(resultTitle);
 
+            //     let resultAuthor = document.createElement('p');
+            //     resultAuthor.textContent = fanfic.author;
+            //     resultAuthor.setAttribute('class', 'result-author');
+            //     resultBox.appendChild(resultAuthor);
+
+            //     let resultDescription = document.createElement('p');
+            //     resultDescription.textContent = fanfic.description;
+            //     resultDescription.setAttribute('class', 'result-description');
+            //     resultBox.appendChild(resultDescription);
+
+            //     let resultHits = document.createElement('p');
+            //     resultHits.textContent = fanfic.hits;
+            //     resultHits.setAttribute('class', 'result-hits');
+            //     resultBox.appendChild(resultHits);
+
+            //     let resultKudos = document.createElement('p');
+            //     resultKudos.textContent = fanfic.kudos;
+            //     resultKudos.setAttribute('class', 'result-kudos');
+            //     resultBox.appendChild(resultKudos);
+
+            //     return resultBox;     
+
+            // }
             function showResults(title) {
                 //console.log("b5. in showResults(title) in base.html")
                 document.getElementById("answer-box").innerHTML = ""
@@ -168,10 +219,29 @@
 
                     .then((data) => data.forEach(row => {
                         //console.log("2. fetched /fanfic-recs")
-                        let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.description)
-                        document.getElementById("answer-box").appendChild(tempDiv)
+                        let result = document.createElement("div");
+                        result.setAttribute('id', row.fanfic_id.toString());
+                        result.innerHTML = answerBoxTemplate(row);
+                        document.getElementById("answer-box").appendChild(result);
                     }));
+            }
+
+            function query_id(fanfic_id) {
+                let xtra_info = document.getElementById(`${fanfic_id}-extra-info`)
+                if (xtra_info) { // Toggle
+                    xtra_info.remove();
+                }
+                else { // Query info
+                    console.log("Querying: " + fanfic_id.toString())
+                    fetch("/inforeq?" + new URLSearchParams({ fanfic_id: fanfic_id }).toString())
+                        .then((response) => response.json())
+                        .then(data => data.forEach(row => {
+                            let info_div = document.createElement('div')
+                            info_div.innerHTML = info_box(row);
+                            document.getElementById(row.fanfic_id.toString()).appendChild(info_div);
+                            
+                        }));
+                }
             }
 
         </script>

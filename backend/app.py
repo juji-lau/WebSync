@@ -149,10 +149,18 @@ def webnovel_to_top_fics(webnovel_title, num_fics):
         info_dict["fanfic_id"] = fanfic_id                              # get fanfic id
         info_dict["description"] = fanfics[fanfic_id]['description']    # get description
         info_dict["title"] = fanfics[fanfic_id]["title"]                # get title
+        info_dict["author"] = fanfics[fanfic_id]["authorName"]          #get author
+        info_dict["hits"] = fanfics[fanfic_id]["hits"]                  #get hits
+        info_dict["kudos"] = fanfics[fanfic_id]["kudos"]                #get kudos
         top_n_fanfics.append(info_dict)
     #top_10_fanfics = filter_fanfics(top_10_fanfics, user_input_tags_list)
     return top_n_fanfics
     
+def getExtraFanficInfo(fanfic_id):
+    info_dict = {}
+    info_dict['tags'] = fanfics[fanfic_id]['tags']
+    info_dict['fanfic_id'] = fanfic_id
+    return [info_dict]
 
 @app.route("/")
 def home():
@@ -256,6 +264,13 @@ def removeTags():
     print(session['tags'])
     session.modified = True
     return {'tags': tag}
+
+@app.route("/inforeq")
+def getExtraInfo():
+    print("a11. in getExtraInfo() in app.py().            app.route(/inforeq) ")
+    fanfic_id = int(request.args.get("fanfic_id"))
+    return getExtraFanficInfo(fanfic_id)
+
 
 if 'DB_NAME' not in os.environ:
     app.run(debug=True,host="0.0.0.0",port=5000)
