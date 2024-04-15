@@ -14,34 +14,36 @@
         <div class="header-container">
             <h1 class="title"> WebSync </h1>
             <h4 class="subtitle"> find fan fictions that match your favorite web novels!</h4>
-            <!-- Tag interface:  -->
-            <div class="input-tags">
-                <label>
-                    Tags:
-                </label>
-                <div class="horizontal-input">
-                    <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image"/>
-                    <input class="search-bar" id="tags-search">
-                    <button id="add-tag-button"> + </button>
-                    </input>
-                </div>
-            </div>
-            <div class="tags-container"></div>
-
-            <!-- Popularity bar interface -->
-            <div class="input-popularity">
-                <label>
-                    Popularity:
-                </label>
-                <div id="slideContainer">
-                    <div id="sliderValue">350</div>
-                    <input type="range" min="350" max="600" value="1" id="size-slider">
-                </div>
-            </div>
             <!-- search container end div -->
         </div>
         <div class="solidline"> </div>
         <div class="results-container">
+            <div class="filters-container">
+                                <!-- Tag interface:  -->
+                <div class="input-tags">
+                    <label>
+                        Tags:
+                    </label>
+                    <div class="horizontal-input">
+                        <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image"/>
+                        <input class="search-bar" id="tags-search">
+                        <button id="add-tag-button"> + </button>
+                        </input>
+                    </div>
+                </div>
+
+                <!-- Popularity bar interface -->
+                <div class="input-popularity">
+                    <label>
+                        Popularity:
+                    </label>
+                    <div id="slideContainer">
+                        <div id="sliderValue">350</div>
+                        <input type="range" min="0" max="100" value="0" id="size-slider">
+                    </div>
+                </div>
+            </div>
+            <div class="tags-container"></div>
             <div class="results-title-container">
                 <div class="results-title">
                     Results

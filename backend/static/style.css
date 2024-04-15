@@ -79,21 +79,11 @@
 }
 
 .input-tags {
-    position: absolute;
     align-items: flex-start;
     display: flex;
-    z-index: 3;
     flex-direction: column;
     justify-content: start;
-
-    width: 16%;
-    left: 5%;
-    height: 20%;
-    top: 60%;
-    margin-top: 10px;
-    margin-right: 20px;
-    margin-bottom: 0px;
-
+    padding: 5px;
     background-color: rgba(125, 79, 36, 0.659);
     /* z index must be 3 or more for the tags button to work */
     font-family: 'Kanit', sans-serif;
@@ -108,13 +98,10 @@
 
 .horizontal-input {
     align-items: baseline;
-    position: absolute;
-
-    width: 65%;
-    left: 20%;
     background-color: none;
     box-shadow: inset;
     display: flex;
+    gap: 10px;
 }
 
 .search-bar {
@@ -135,36 +122,38 @@
     z-index: 6;
 }
 
+.filters-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 20px;
+}
+
 .tags-container {
-    position: absolute;
-    width: 65%;
-    left: 22%;
-    height: 21%;
-    top: 65%;
+    margin-left: 15px;
+    justify-self: flex-start;
+    align-self: flex-start;
     background-color: none;
-    overflow: wrap;
+    /* overflow: wrap;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-column-gap: 5px;
+    grid-column-gap: 5px; */
     box-sizing: border-box;
-    grid-row: inherit;
+    /* grid-row: inherit; */
+    width: 100%;
+    display: flex;
     justify-content: start;
     align-items: center;
-    gap: 5px 10px;
-    z-index: 2;
+    /* gap: 5px 10px; */
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .input-popularity {
-    position: absolute;
-
     display: flex;
     font-family: 'Kanit', sans-serif;
     flex-direction: column;
-    width: 25%;
-    left: 70%;
-    height: 20%;
-    top: 40%;
-    z-index: 2;
     justify-content: start;
     font-size: 13px;
     margin-top: 10px;
@@ -186,8 +175,8 @@ label {
 }
 
 .tag {
-    color: #FAEED1;
-    background-color: #B2A59B;
+    color: black;
+    background-color: white;
     border-color: black;
     border-width: 1px;
     display: flex;
@@ -197,23 +186,13 @@ label {
     padding-left: 5px;
     padding-right: 5px;
     font-family: 'Kanit', sans-serif;
+    gap: 10px;
 }
 
-.delete-button {
-    border-color: black;
-    font-size: 10px;
-    background-color: red;
-    align-self: flex-end;
 
-}
-
-#add-tag-button {
-    width: 3.5%;
-    left: 17.5%;
-    top: 14.5%;
-    height: 3.5%;
+#add-tag-button, .delete-button {
     border-style: none;
-    background: whitesmoke;
+    background-color: whitesmoke;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -221,17 +200,21 @@ label {
     font-weight: bold;
     color: #555555;
     transition: 0.5s;
-    z-index: 1;
+    border-radius: 5%;
 }
 
-#add-tag-button:hover,
+#add-tag-button:hover
+{
+    background-color: #555555;
+    color: whitesmoke;
+    transition: 0.5s;
+}
+
 .delete-button:hover {
-    color: black;
-    font-size: 26px;
+    background-color: red;
+    color: whitesmoke;
     transition: 0.5s;
     font-weight: bolder;
-    transform: translateY(-6px);
-    transform: translateX(-3px);
 }
 
 .single-container {
@@ -267,12 +250,9 @@ label {
 }
 
 .results-title-container {
-    position: fixed;
-    left: 40%;
-    width: 60%;
-    z-index: 1;
+    width: 100%;
     border-style: solid;
-    border-width: 0px 3px 3px 3px;
+    border-width: 3px 3px 3px 3px;
     border-right-color: #555555;
     border-left-color: #555555;
     border-bottom-color: #555555;
@@ -281,8 +261,6 @@ label {
 }
 
 .results-title {
-    height: 50%;
-    z-index: -1;
     align-self: stretch;
     background-color: rgba(189, 163, 123, 0.737);
     text-align: center;
