@@ -58,6 +58,7 @@ for file in fanfic_files:
 with open(cossim_json_file_path, 'r') as file: 
     file_contents = json.load(file)
     cossims = file_contents['cossims']
+    fic_popularities = file_contents['fanfic_id_to_popularity']
     webnovel_title_to_index = file_contents['webnovel_title_to_index']
     index_to_fanfic_id = file_contents['index_to_fanfic_id']
 
@@ -107,9 +108,10 @@ def recommendations():
     Links to showResults(title) in base.html
     """
     print("a2. In recomendations() app.py           app.route(/fanfic-recs/)")
-    return webnovel_to_top10fics(session['title'])
+    weight = request.args.get("popularity_slider")
+    return webnovel_to_top10fics(session['title'], int(weight)/100)
 
-def webnovel_to_top10fics(webnovel_title):
+def webnovel_to_top10fics(webnovel_title, popularity_weight):
     """
     Called when the user clicks "Show Recommendations"
     input: webnovel_title --> the title of the user queried webnovel
@@ -123,6 +125,9 @@ def webnovel_to_top10fics(webnovel_title):
     webnovel_index = webnovel_title_to_index[webnovel_title]
     sorted_fanfics_tuplst = cossims[str(webnovel_index)]
     top_10 = sorted_fanfics_tuplst[:10]
+    for fic_tuple in top_10:
+        fic_tuple[0] = fic_popularities[str(fic_tuple[1])] * popularity_weight + fic_tuple[0] * (1 - popularity_weight)
+    top_10 = sorted(top_10, key=lambda x: x[0], reverse=True)[:10]
     top_10_fanfic_indexes = [t[1] for t in top_10]
     top_10_fanfics = []
     for i in top_10_fanfic_indexes:

@@ -142,7 +142,7 @@ def tokenize_fanfics(tokenize_method: Callable[[str], List[str]],
       fic_id_to_index[fanfic_id] = counter
       index_to_fic_id[counter] = fanfic_id
       popularity = fanfic_dict['hits'] + fanfic_dict['kudos'] + fanfic_dict['comments'] + fanfic_dict['bookmarks']
-      fanfic_id_to_popularity[fanfic_id] = popularity
+      fanfic_id_to_popularity[counter] = popularity
       counter+=1
     return tokenized_descriptions  
 

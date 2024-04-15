@@ -35,7 +35,7 @@
                 </label>
                 <div id="slideContainer">
                     <div id="sliderValue">350</div>
-                    <input type="range" min="350" max="600" value="1" id="size-slider">
+                    <input type="range" min="0" max="100" value="1" id="size-slider">
                 </div>
             </div>
             <!-- search container end div -->
@@ -156,11 +156,11 @@
                 document.getElementById(id).focus()
             }
 
-            function showResults(title) {
+            function showResults() {
                 //console.log("b5. in showResults(title) in base.html")
                 document.getElementById("answer-box").innerHTML = ""
-
-                fetch("/fanfic-recs/")
+                const slider = document.getElementById("size-slider")
+                fetch("/fanfic-recs/?" + new URLSearchParams({ popularity_slider: slider.value }).toString())
                     .then((response) => response.json())
                     // console.log("1. fetched /fanfic-recs")
 
