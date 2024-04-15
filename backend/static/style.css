@@ -79,21 +79,11 @@
 }
 
 .input-tags {
-    position: absolute;
     align-items: flex-start;
     display: flex;
-    z-index: 3;
     flex-direction: column;
     justify-content: start;
-
-    width: 16%;
-    left: 5%;
-    height: 20%;
-    top: 60%;
-    margin-top: 10px;
-    margin-right: 20px;
-    margin-bottom: 0px;
-
+    padding: 5px;
     background-color: rgba(125, 79, 36, 0.659);
     /* z index must be 3 or more for the tags button to work */
     font-family: 'Kanit', sans-serif;
@@ -108,13 +98,10 @@
 
 .horizontal-input {
     align-items: baseline;
-    position: absolute;
-
-    width: 65%;
-    left: 20%;
     background-color: none;
     box-shadow: inset;
     display: flex;
+    gap: 10px;
 }
 
 .search-bar {
@@ -135,36 +122,38 @@
     z-index: 6;
 }
 
+.filters-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 20px;
+}
+
 .tags-container {
-    position: absolute;
-    width: 65%;
-    left: 22%;
-    height: 21%;
-    top: 65%;
+    margin-left: 15px;
+    justify-self: flex-start;
+    align-self: flex-start;
     background-color: none;
-    overflow: wrap;
+    /* overflow: wrap;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-column-gap: 5px;
+    grid-column-gap: 5px; */
     box-sizing: border-box;
-    grid-row: inherit;
+    /* grid-row: inherit; */
+    width: 100%;
+    display: flex;
     justify-content: start;
     align-items: center;
-    gap: 5px 10px;
-    z-index: 2;
+    /* gap: 5px 10px; */
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .input-popularity {
-    position: absolute;
-
     display: flex;
     font-family: 'Kanit', sans-serif;
     flex-direction: column;
-    width: 25%;
-    left: 70%;
-    height: 20%;
-    top: 40%;
-    z-index: 2;
     justify-content: start;
     font-size: 13px;
     margin-top: 10px;
@@ -186,8 +175,8 @@ label {
 }
 
 .tag {
-    color: #FAEED1;
-    background-color: #B2A59B;
+    color: black;
+    background-color: white;
     border-color: black;
     border-width: 1px;
     display: flex;
@@ -197,16 +186,14 @@ label {
     padding-left: 5px;
     padding-right: 5px;
     font-family: 'Kanit', sans-serif;
+    gap: 10px;
 }
 
-#add-tag-button,
-.delete-button {
-    width: 3.5%;
-    left: 17.5%;
-    top: 14.5%;
-    height: 3.5%;
+
+#add-tag-button, .answer-info-button, .delete-button, 
+.answer-remove-button {
     border-style: none;
-    background: whitesmoke;
+    background-color: whitesmoke;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -214,18 +201,21 @@ label {
     font-weight: bold;
     color: #555555;
     transition: 0.5s;
-    z-index: 6;
+    border-radius: 5%;
 }
 
-#add-tag-button:hover,
-.delete-button:hover {
-    color: black;
-    font-size: 26px;
+#add-tag-button:hover, .answer-info-button:hover,.answer-remove-button:hover
+{
+    background-color: #555555;
+    color: whitesmoke;
+    transition: 0.5s;
+}
+
+.delete-button:hover{
+    background-color: red;
+    color: whitesmoke;
     transition: 0.5s;
     font-weight: bolder;
-    transform: translateY(-6px);
-    transform: translateX(-3px);
-    z-index: 6;
 }
 
 .single-container {
@@ -260,57 +250,103 @@ label {
 
 }
 
+.results-title {
+    text-align: center;
+    font-family: 'Kanit', sans-serif;
+    font-size: 30px;
+}
+
 .results-title-container {
-    position: fixed;
-    left: 40%;
-    width: 60%;
-    z-index: 1;
+    width: 100%;
     border-style: solid;
-    border-width: 0px 3px 3px 3px;
+    border-width: 3px 3px 3px 3px;
     border-right-color: #555555;
     border-left-color: #555555;
     border-bottom-color: #555555;
     border-bottom-left-radius: 3pt;
     border-bottom-right-radius: 3pt;
-}
-
-.results-title {
-    height: 50%;
-    z-index: -1;
-    align-self: stretch;
-    background-color: rgba(189, 163, 123, 0.737);
-    text-align: center;
-    font-size: 21px;
-    font-family: "Noteworthy";
-    font-weight: bold;
-    padding: 2px;
 
 }
 
 #answer-box {
-    display: grid;
+    display: flex;
     margin-top: 50px;
     margin-left: 40px;
     margin-right: 20px;
     margin-bottom: 30px;
     overflow: scroll;
+    flex-direction: column;
+    justify-content: start;
+    align-items: stretch;
+    gap: 20px;
+}
+
+.fanfic-box {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.fanfic-box-left {
+    height: 100px;
+    margin:0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .fanfic-title {
     font-family: 'Kanit', sans-serif;
     color: black;
     font-size: medium;
+    margin:0px;
 }
 
 .fanfic-desc {
     font-family: 'Montserrat', sans-serif;
     color: darkslategray;
     font-size: small;
+    margin:0px;
+}
+
+p {
+    margin: 0px;
+}
+
+.answer-button-display {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.answer-info-button, .answer-remove-button {
+    padding: 10px;
+}
+
+.fanfic-extra-info-box {
+    border: 1px solid black;
+    border-top-width: 0px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.fanfic-tags-container {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 20px;
 }
 
 /* ======================================================================== */
 
-button {
+.show-rec-button {
     position: fixed;
     height: 6%;
     left: 10%;
@@ -379,6 +415,7 @@ button {
     gap: 10px;
     align-items: center;
     overflow: scroll;
+    margin: 0px;
 }
 
 #selected-author {

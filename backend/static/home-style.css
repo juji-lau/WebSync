@@ -34,7 +34,7 @@ body {
 
 .title-container {
     position: absolute;
-    top: 10%;
+    top: 5%;
     height: 25%;
     left: 20%;
     width: 60%;
@@ -54,7 +54,7 @@ body {
 
 .description-container {
     position: absolute;
-    top: 37.5%;
+    top: 32.5%;
     height: 5%;
     left: 10%;
     width: 80%;
@@ -76,7 +76,7 @@ body {
 }
 
 .prompt-container {
-    top: 50%;
+    top: 45%;
     left: 30%;
     width: 40%;
     position: absolute;
@@ -98,7 +98,7 @@ body {
 }
 
 .search-container {
-    top: 65%;
+    top: 60%;
     height: 7%;
     left: 30%;
     width: 40%;
@@ -111,7 +111,7 @@ body {
     text-align: center;
 }
 
-.horizontal {
+.horizontal, .search-box {
     padding: 10px;
     border-radius: 4px;
     box-shadow: inset;
@@ -254,4 +254,35 @@ footer {
     background-color: black;
     width: 100%;
     height: 2.5%;
+}
+
+#search-title {
+    display: flex;
+}
+
+#search-descr {
+    display: none;
+}
+#search-title , #search-descr {
+    margin: 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Kanit', sans-serif;
+}
+
+
+.search-toggle {
+    border-radius: 10px;
+    background: none ;
+    border-style: solid;
+    border-color: black;
+    font-family: 'Kanit', sans-serif;
+    transition: 0.5s;
+}
+
+.search-toggle:hover {
+    background-color: black;
+    color: rgb(215, 193, 125);
+    transition:0.5s;
 }

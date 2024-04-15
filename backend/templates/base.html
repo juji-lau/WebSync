@@ -14,34 +14,36 @@
         <div class="header-container">
             <h1 class="title"> WebSync </h1>
             <h4 class="subtitle"> find fan fictions that match your favorite web novels!</h4>
-            <!-- Tag interface:  -->
-            <div class="input-tags">
-                <label>
-                    Tags:
-                </label>
-                <div class="horizontal-input">
-                    <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image"/>
-                    <input class="search-bar" id="tags-search">
-                    <button id="add-tag-button"> + </button>
-                    </input>
-                </div>
-            </div>
-            <div class="tags-container"></div>
-
-            <!-- Popularity bar interface -->
-            <div class="input-popularity">
-                <label>
-                    Popularity:
-                </label>
-                <div id="slideContainer">
-                    <div id="sliderValue">350</div>
-                    <input type="range" min="0" max="100" value="1" id="size-slider">
-                </div>
-            </div>
             <!-- search container end div -->
         </div>
         <div class="solidline"> </div>
         <div class="results-container">
+            <div class="filters-container">
+                                <!-- Tag interface:  -->
+                <div class="input-tags">
+                    <label>
+                        Tags:
+                    </label>
+                    <div class="horizontal-input">
+                        <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image"/>
+                        <input class="search-bar" id="tags-search">
+                        <button id="add-tag-button"> + </button>
+                        </input>
+                    </div>
+                </div>
+
+                <!-- Popularity bar interface -->
+                <div class="input-popularity">
+                    <label>
+                        Popularity:
+                    </label>
+                    <div id="slideContainer">
+                        <div id="sliderValue">350</div>
+                        <input type="range" min="0" max="100" value="0" id="size-slider">
+                    </div>
+                </div>
+            </div>
+            <div class="tags-container"></div>
             <div class="results-title-container">
                 <div class="results-title">
                     Results
@@ -69,7 +71,7 @@
                 <div id="selected-descr"></div>
             </div>
         </div>
-        <button onclick="showResults()">Show Recommendations</button>
+        <button onclick="showResults()" class="show-rec-button">Show Recommendations</button>
         <!-- </div> -->
         <div class="footer"></div>
 
@@ -88,7 +90,7 @@
                 newTag.appendChild(tagName);
                 let deleteButton = document.createElement('button');
                 deleteButton.setAttribute("class", "delete-button");
-                deleteButton.setAttribute('id', inputTag)
+                // deleteButton.setAttribute('id', inputTag)
                 deleteButton.textContent = "x";
                 deleteButton.addEventListener('click', () => {
                     tagContainer.removeChild(newTag);
@@ -143,20 +145,83 @@
             }
 
 
-            function answerBoxTemplate(title, titleDesc) {
-                //console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
-                return `<div class=''>
-                    <h3 class='fanfic-title'>${title}</h3>
-                    <p class='fanfic-desc'>${titleDesc}</p>
+            function answerBoxTemplate(fanfic) {
+                // console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
+                return `<div class='fanfic-box'>
+                    <div class='fanfic-box-left'>
+                        <h3 class='fanfic-title'>${fanfic.title} by ${fanfic.author}</h3>
+                        <p class='fanfic-desc'>${fanfic.description}</p>
+                        <div class='horizontal'> 
+                            <p class='fanfic-hits'> Hits: ${fanfic.hits}</p>
+                            <p class='fanfic-kudos'> Kudos: ${fanfic.kudos}</p>
+                        </div>
+                    </div>
+                    <div class='answer-button-display'>
+                        <button onclick='query_id("${fanfic.fanfic_id}")' class='answer-info-button'>Info</button>
+                        <button onclick='document.getElementById("${fanfic.fanfic_id}").remove()' class='answer-remove-button'>Remove</button>
+                    </div>
                 </div>`
+            }
+
+            function info_box(fanfic) {
+                return `<div> 
+                        </div>`
+            }
+
+            function showFanFicTags(fanfic) {
+                const container = document.createElement('div');
+                container.setAttribute('class', 'fanfic-tags-container');
+                const header = document.createElement('h3');
+                header.textContent = "Tags: ";
+                header.setAttribute('class', 'fanfic-tag-header');
+                container.appendChild(header);
+                for (let i = 0; i < 5; i++){
+                    const tag = document.createElement('div');
+                    tag.setAttribute('class','fanfic-tag');
+                    tag.textContent = fanfic.tags[i];
+                    container.appendChild(tag);
+                }
+                return container;
             }
 
             function sendFocus(id) {
                 //console.log("b4. in sendFocus(id) in base.html")
                 document.getElementById(id).focus()
             }
+            
+            // function addResult(fanfic){
+            //     let resultBox = document.createElement('div');
+            //     resultBox.setAttribute('class', 'result-box');
+                
+            //     let resultTitle = document.createElement('h3');
+            //     resultTitle.textContent = fanfic.title;
+            //     resultTitle.setAttribute('class', 'result-title');
+            //     resultBox.appendChild(resultTitle);
 
-            function showResults() {
+            //     let resultAuthor = document.createElement('p');
+            //     resultAuthor.textContent = fanfic.author;
+            //     resultAuthor.setAttribute('class', 'result-author');
+            //     resultBox.appendChild(resultAuthor);
+
+            //     let resultDescription = document.createElement('p');
+            //     resultDescription.textContent = fanfic.description;
+            //     resultDescription.setAttribute('class', 'result-description');
+            //     resultBox.appendChild(resultDescription);
+
+            //     let resultHits = document.createElement('p');
+            //     resultHits.textContent = fanfic.hits;
+            //     resultHits.setAttribute('class', 'result-hits');
+            //     resultBox.appendChild(resultHits);
+
+            //     let resultKudos = document.createElement('p');
+            //     resultKudos.textContent = fanfic.kudos;
+            //     resultKudos.setAttribute('class', 'result-kudos');
+            //     resultBox.appendChild(resultKudos);
+
+            //     return resultBox;     
+
+            // }
+            function showResults(title) {
                 //console.log("b5. in showResults(title) in base.html")
                 document.getElementById("answer-box").innerHTML = ""
                 const slider = document.getElementById("size-slider")
@@ -166,10 +231,32 @@
 
                     .then((data) => data.forEach(row => {
                         //console.log("2. fetched /fanfic-recs")
-                        let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.description)
-                        document.getElementById("answer-box").appendChild(tempDiv)
+                        let result = document.createElement("div");
+                        result.setAttribute('id', row.fanfic_id.toString());
+                        result.innerHTML = answerBoxTemplate(row);
+                        document.getElementById("answer-box").appendChild(result);
                     }));
+            }
+
+            function query_id(fanfic_id) {
+                let xtra_info = document.getElementById(`${fanfic_id}-extra-info`)
+                if (xtra_info) { // Toggle
+                    xtra_info.remove();
+                }
+                else { // Query info
+                    console.log("Querying: " + fanfic_id.toString())
+                    fetch("/inforeq?" + new URLSearchParams({ fanfic_id: fanfic_id }).toString())
+                        .then((response) => response.json())
+                        .then(data => data.forEach(row => {
+                            let info_div = document.createElement('div')
+                            info_div.setAttribute('id', `${fanfic_id}-extra-info`);
+                            info_div.setAttribute('class', 'fanfic-extra-info-box');
+                            info_div.innerHTML = info_box(row);
+                            info_div.appendChild(showFanFicTags(row));
+                            document.getElementById(row.fanfic_id.toString()).appendChild(info_div);
+                            
+                        }));
+                }
             }
 
         </script>
