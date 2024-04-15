@@ -148,13 +148,13 @@
             function answerBoxTemplate(fanfic) {
                 // console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
                 return `<div class='fanfic-box'>
-                    <div>
+                    <div class='fanfic-box-left'>
                         <h3 class='fanfic-title'>${fanfic.title} by ${fanfic.author}</h3>
                         <p class='fanfic-desc'>${fanfic.description}</p>
-                    </div>
-                    <div class='horizontal'> 
-                        <p class='fanfic-hits'> Hits: ${fanfic.hits}</p>
-                        <p class='fanfic-kudos'> Kudos: ${fanfic.kudos}</p>
+                        <div class='horizontal'> 
+                            <p class='fanfic-hits'> Hits: ${fanfic.hits}</p>
+                            <p class='fanfic-kudos'> Kudos: ${fanfic.kudos}</p>
+                        </div>
                     </div>
                     <div class='answer-button-display'>
                         <button onclick='query_id("${fanfic.fanfic_id}")' class='answer-info-button'>Info</button>
@@ -163,13 +163,25 @@
                 </div>`
             }
 
-            // Info box
             function info_box(fanfic) {
-                return `<div id='${fanfic.fanfic_id}-extra-info' style='border:1px solid black;padding:10px;border-radius:5px'>
-                            <div class='fanfic-tags'>
-                            </div>
-                </div>
-                `
+                return `<div> 
+                        </div>`
+            }
+
+            function showFanFicTags(fanfic) {
+                const container = document.createElement('div');
+                container.setAttribute('class', 'fanfic-tags-container');
+                const header = document.createElement('h3');
+                header.textContent = "Tags: ";
+                header.setAttribute('class', 'fanfic-tag-header');
+                container.appendChild(header);
+                for (let i = 0; i < 5; i++){
+                    const tag = document.createElement('div');
+                    tag.setAttribute('class','fanfic-tag');
+                    tag.textContent = fanfic.tags[i];
+                    container.appendChild(tag);
+                }
+                return container;
             }
 
             function sendFocus(id) {
@@ -237,7 +249,10 @@
                         .then((response) => response.json())
                         .then(data => data.forEach(row => {
                             let info_div = document.createElement('div')
+                            info_div.setAttribute('id', `${fanfic_id}-extra-info`);
+                            info_div.setAttribute('class', 'fanfic-extra-info-box');
                             info_div.innerHTML = info_box(row);
+                            info_div.appendChild(showFanFicTags(row));
                             document.getElementById(row.fanfic_id.toString()).appendChild(info_div);
                             
                         }));

@@ -190,7 +190,8 @@ label {
 }
 
 
-#add-tag-button, .delete-button {
+#add-tag-button, .answer-info-button, .delete-button, 
+.answer-remove-button {
     border-style: none;
     background-color: whitesmoke;
     display: flex;
@@ -203,14 +204,14 @@ label {
     border-radius: 5%;
 }
 
-#add-tag-button:hover
+#add-tag-button:hover, .answer-info-button:hover,.answer-remove-button:hover
 {
     background-color: #555555;
     color: whitesmoke;
     transition: 0.5s;
 }
 
-.delete-button:hover {
+.delete-button:hover{
     background-color: red;
     color: whitesmoke;
     transition: 0.5s;
@@ -281,24 +282,66 @@ label {
 }
 
 .fanfic-box {
-    background-color: #FAEED1;
+    background-color: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.fanfic-box-left {
+    height: 100px;
+    margin:0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .fanfic-title {
     font-family: 'Kanit', sans-serif;
     color: black;
     font-size: medium;
+    margin:0px;
 }
 
 .fanfic-desc {
     font-family: 'Montserrat', sans-serif;
     color: darkslategray;
     font-size: small;
+    margin:0px;
+}
+
+p {
+    margin: 0px;
+}
+
+.answer-button-display {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.answer-info-button, .answer-remove-button {
+    padding: 10px;
+}
+
+.fanfic-extra-info-box {
+    border: 1px solid black;
+    border-top-width: 0px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.fanfic-tags-container {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 20px;
 }
 
 /* ======================================================================== */
@@ -372,6 +415,7 @@ label {
     gap: 10px;
     align-items: center;
     overflow: scroll;
+    margin: 0px;
 }
 
 #selected-author {
