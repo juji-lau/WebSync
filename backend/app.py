@@ -77,7 +77,7 @@ def json_search(query):
     query:str - what the user types when searching for a webnovel
 
     Return(s):
-    matches: Dict{ str: str} - a list of matching webnovel dictionaries to the query. 
+    matches: [Dict{str: str}] - a list of matching webnovel dictionaries to the query. 
         Each dictionary includes the webovel title and description currently.  
     """
     print("a1. In json_search(query) in app.py          No app.route()")
@@ -88,7 +88,17 @@ def json_search(query):
     return matches
 
 def user_description_search(user_description):
-    vectorizer = TfidfVectorizer(stop_words='english')
+    """
+    Uses SVD and cosine similarity between a description inputted by the user and 
+    each webnovel to find the five most similar webnovels. 
+
+    Argument(s):
+    user_description:str - the description typed by the user
+
+    Return(s):
+    match: Dict{str:str, str:str} - a dictionary with the webnovel that most matches the user description
+    """
+    vectorizer = TfidfVectorizer()
     docs_tfidf = vectorizer.fit_transform(novel_descriptions)
 
     svd = TruncatedSVD(n_components=50)
@@ -104,7 +114,6 @@ def user_description_search(user_description):
         matches.append({'title': novel_titles[result_index][0], 
                         'descr': novel_descriptions[result_index]})
     return matches
-
 
 @app.route("/fanfic-recs/")
 def recommendations(): 
