@@ -70,7 +70,7 @@ CORS(app)
 
 """ ========================= Backend stuff: ============================"""
 """ Global variable to store all the user's input tags"""
-user_input_tags = {"tags": []}
+user_input_tags = []
 
 def json_search(query):
     """ Searches the webnovel database for a matching webnovel to the user typed query 
@@ -161,8 +161,10 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
         info_dict["author"] = fanfics[fanfic_id]["authorName"]          #get author
         info_dict["hits"] = fanfics[fanfic_id]["hits"]                  #get hits
         info_dict["kudos"] = fanfics[fanfic_id]["kudos"]                #get kudos
+        info_dict["tags"] = fanfics[fanfic_id]["tags"]                  # get tags
         top_n_fanfics.append(info_dict)
-    #top_10_fanfics = filter_fanfics(top_10_fanfics, user_input_tags)
+    if len(user_input_tags) != 0:
+        top_n_fanfics = filter_fanfics(top_n_fanfics, user_input_tags)
     return top_n_fanfics
     
 def getExtraFanficInfo(fanfic_id):
@@ -261,9 +263,8 @@ def addTag():
         session['tags'].append(newTag)
     session.modified = True
     
-    # MAYBE?
-    user_input_tags['tags'].append(newTag)
-    print("After ADDING, current tags", user_input_tags["tags"])
+    user_input_tags.append(newTag)
+    print("After ADDING, current tags", user_input_tags)
     return {'tags': newTag}
 
 @app.route("/removeTag")
@@ -276,9 +277,8 @@ def removeTags():
     session['tags'].remove(tag)
     print(session['tags'])
     session.modified = True
-    
-    user_input_tags['tags'].append(tag)
-    print("After removing, current tags", user_input_tags["tags"])
+    user_input_tags.remove(tag)
+    print("After removing, current tags", user_input_tags)
     return {'tags': tag}
 
 @app.route("/inforeq")

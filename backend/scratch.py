@@ -477,7 +477,7 @@ def filter_fanfics(fanfics, tags_list):
     Arguments
     =========
     fanfics: A list[Dict] of fanfictions in the same form returned by get_fanfic_data()
-    tags_list: The list of tags to filter using
+    tags_list: The list of tags to filter using.  Can be user entered.
 
     Returns: 
     ==========
@@ -485,13 +485,18 @@ def filter_fanfics(fanfics, tags_list):
     For all fanfic in filtered_fanfics, fanfic["tags"] must contain only strings 
     present in tags_list.
     """
+    print("FANFICS: ", fanfics)
     filtered_fanfics = []
+    tags_list = [tag.lower() for tag in tags_list]
     tags_set = set(tags_list)
     for fanfic in fanfics: 
         fanfic_tags_list = [tag.lower() for tag in fanfic["tags"]]
         fanfic_tags_set = set(fanfic_tags_list)
+        print("OG tagset: ", tags_set)
+        print("FANFIC tags: ", fanfic_tags_set)
         if len(fanfic_tags_set.intersection(tags_set)) > 0:
             filtered_fanfics.append(fanfic)
+            print("ADDED!! ")
     return filtered_fanfics
 
 
