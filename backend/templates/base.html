@@ -152,8 +152,10 @@
                         <h3 class='fanfic-title'>${fanfic.title} by ${fanfic.author}</h3>
                         <p class='fanfic-desc'>${fanfic.description}</p>
                         <div class='horizontal'> 
-                            <p class='fanfic-hits'> Hits: ${fanfic.hits}</p>
-                            <p class='fanfic-kudos'> Kudos: ${fanfic.kudos}</p>
+                            <img class='small-image' src="{{ url_for('static', filename='images/eye.svg') }}"/>
+                            <p class='fanfic-hits'> ${fanfic.hits}</p>
+                            <img class='small-image' src="{{ url_for('static', filename='images/thumbs-up.svg') }}"/>
+                            <p class='fanfic-kudos'> ${fanfic.kudos}</p>
                         </div>
                     </div>
                     <div class='answer-button-display'>

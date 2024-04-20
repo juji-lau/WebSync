@@ -162,7 +162,7 @@ body {
 }
 
 .large-image {
-    width: 60%;
+    height: 100%;
 }
 
 .next-container {
@@ -191,9 +191,10 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    top: 30%;
+    top: 32.5%;
     width: 50%;
     left: 25%;
+    height: 40%;
 }
 
 .prompt-container {
