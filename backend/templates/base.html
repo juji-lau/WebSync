@@ -38,8 +38,8 @@
                         Popularity:
                     </label>
                     <div id="slideContainer">
-                        <div id="sliderValue">350</div>
-                        <input type="range" min="0" max="100" value="0" id="size-slider">
+                        <div id="slider-value"></div>
+                        <input type="range" min="0" max="100" value="0" id="size-slider" onchange="showResults()">
                     </div>
                 </div>
             </div>
@@ -97,6 +97,7 @@
                     fetch("/removeTag?" + new URLSearchParams({ tag: inputTag }).toString())
                         .then((response) => response.json())
                         .then((data) => {
+                            showResults();
                         })
                 });
                 newTag.appendChild(deleteButton);
@@ -104,7 +105,10 @@
                 fetch("/addTag?" + new URLSearchParams({ tag: inputTag }).toString())
                     .then((response) => response.json())
                     .then((data) => {
+                        showResults();
                     })
+
+                
             }
 
             function setup() {
@@ -142,6 +146,7 @@
                 //console.log("called document.getElementById('add-tag-button')")
                 addTagButton.addEventListener('click', addTag);
                 //console.log("called addTagButton.addEventListener('click', addTag);")
+                showResults();
             }
 
 
@@ -223,10 +228,11 @@
             //     return resultBox;     
 
             // }
-            function showResults(title) {
+            function showResults() {
                 //console.log("b5. in showResults(title) in base.html")
-                document.getElementById("answer-box").innerHTML = ""
-                const slider = document.getElementById("size-slider")
+                document.getElementById("answer-box").innerHTML = "";
+                const slider = document.getElementById("size-slider");
+                document.getElementById("slider-value").textContent = slider.value;
                 fetch("/fanfic-recs/?" + new URLSearchParams({ popularity_slider: slider.value }).toString())
                     .then((response) => response.json())
                     // console.log("1. fetched /fanfic-recs")

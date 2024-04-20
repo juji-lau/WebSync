@@ -144,16 +144,21 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
         - etc.
     """
     print("a3. In webnovel_to_top_fanfictions() app.py         No app.route()")
+    print("Popularity Weight: " + str(popularity_weight))
     webnovel_index = webnovel_title_to_index[webnovel_title]
     sorted_fanfics_tuplst = cossims[str(webnovel_index)]
-    top_n = sorted_fanfics_tuplst[:num_fics]
+    top_n = np.copy(sorted_fanfics_tuplst[:num_fics])
+    max_pop = np.max(list(fic_popularities.values()))
+    print(max_pop)
+    print(top_n[:10])
     for fic_tuple in top_n:
-        fic_tuple[0] = fic_popularities[str(fic_tuple[1])] * popularity_weight + fic_tuple[0] * (1 - popularity_weight)
+        fic_tuple[0] = fic_popularities[str(int(fic_tuple[1]))] / max_pop * popularity_weight + fic_tuple[0] * (1 - popularity_weight)
+    print(top_n[:10])
     top_n = sorted(top_n, key=lambda x: x[0], reverse=True)[:10]
     top_n_fanfic_indexes = [t[1] for t in top_n]
     top_n_fanfics = []
     for i in top_n_fanfic_indexes:
-        fanfic_id = index_to_fanfic_id[str(i)]
+        fanfic_id = index_to_fanfic_id[str(int(i))]
         info_dict = {}
         info_dict["fanfic_id"] = fanfic_id                              # get fanfic id
         info_dict["description"] = fanfics[fanfic_id]['description']    # get description
@@ -188,7 +193,9 @@ def results():
     """ Called when the user clicks the --> arrow on the home page."""
     print("a5. In results() in app.py           app.route(/results)")
     session['tags'] = None
+
     return render_template('base.html',title="sample html")
+    
 
 @app.route("/titleSearch")
 def titleSearch():
