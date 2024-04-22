@@ -22,7 +22,7 @@
                                 <!-- Tag interface:  -->
                 <div class="input-tags">
                     <label>
-                        Tags:
+                        Filter by Tags:
                     </label>
                     <div class="horizontal-input">
                         <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image"/>
@@ -35,10 +35,13 @@
                 <!-- Popularity bar interface -->
                 <div class="input-popularity">
                     <label>
-                        Popularity:
+                        Weight Search by Popularity:
                     </label>
                     <div id="slideContainer">
-                        <div id="slider-value"></div>
+                        <div id="slider-value">
+                            <p> most similar </p>
+                            <p> most popular </p>
+                        </div>
                         <input type="range" min="0" max="100" value="0" id="size-slider" onchange="showResults()">
                     </div>
                 </div>
@@ -54,6 +57,7 @@
         </div>
         <!-- <div class="novel-container"> -->
         <div class="novel-info-container">
+            <h1> Chosen Web Novel Info</h1>
             <div id="selected-title"></div>
             <div class="horizontal">
                 <label style="font-size: 17px"><b>Author: </b></label>
@@ -71,7 +75,12 @@
                 <div id="selected-descr"></div>
             </div>
         </div>
-        <button onclick="showResults()" class="show-rec-button">Show Recommendations</button>
+        <a href="/">
+            <button class="back-button">
+                <img src="{{ url_for('static', filename='images/leftarrow.svg') }}"
+                    class="arrow small-icon black-icon" />
+            </button>
+        </a>
         <!-- </div> -->
         <div class="footer"></div>
 
@@ -232,7 +241,6 @@
                 //console.log("b5. in showResults(title) in base.html")
                 document.getElementById("answer-box").innerHTML = "";
                 const slider = document.getElementById("size-slider");
-                document.getElementById("slider-value").textContent = slider.value;
                 fetch("/fanfic-recs/?" + new URLSearchParams({ popularity_slider: slider.value }).toString())
                     .then((response) => response.json())
                     // console.log("1. fetched /fanfic-recs")

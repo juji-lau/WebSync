@@ -346,25 +346,31 @@ p {
 
 /* ======================================================================== */
 
-.show-rec-button {
+.back-button {
     position: fixed;
-    height: 6%;
-    left: 10%;
+    left: 17.5%;
     top: 87%;
     display: flex;
-    margin: 2px, 10px;
     align-items: center;
-    font-family: "Noteworthy";
-    font-weight: bold;
-    font-size: 14px;
-    background-color: #FFD4B7;
-    color: rgb(0, 0, 0);
-    border-color: #1C1C1C;
-    border-width: 1px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 0 10px rgba(27, 7, 2, 0.5);
+    justify-content: center;
     z-index: 3;
+    background:none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 30px;
+}
+
+.arrow {
+    border-radius: 30px;
+    width: 45px;
+    height: 45px;
+    transition: 0.5s;
+}
+
+.arrow:hover {
+    transition: 0.5s;
+    background-color: rgba(255,255,255,0.5);
 }
 
 /* =============== WebNovel Info container: =========================== */
@@ -442,6 +448,15 @@ p {
     color: #B2A59B;
 }
 
+#slider-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#size-slider {
+    width: 100%;
+}
 /* ========================================================================== */
 
 .footer {
