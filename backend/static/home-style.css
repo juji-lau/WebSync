@@ -42,6 +42,21 @@ body {
     z-index: 1;
 }
 
+@keyframes float {
+	0% {
+		text-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
+		transform: translatey(0px);
+	}
+	50% {
+		text-shadow: 0 25px 15px 0px rgba(0,0,0,0.2);
+		transform: translatey(-20px);
+	}
+	100% {
+		text-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
+		transform: translatey(0px);
+	}
+}
+
 .title {
     flex: 1;
     font-family: "Noteworthy";
@@ -50,7 +65,10 @@ body {
     justify-content: center;
     font-size: 800%;
     text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.75);
+    animation: float 6s ease-in-out infinite;
 }
+
+
 
 .description-container {
     position: absolute;
