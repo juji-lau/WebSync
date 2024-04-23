@@ -272,7 +272,7 @@ label {
 #answer-box {
     display: flex;
     margin-top: 50px;
-    margin-left: 40px;
+    margin-left: 30px;
     margin-right: 20px;
     margin-bottom: 30px;
     overflow: scroll;
@@ -290,9 +290,15 @@ label {
     justify-content: space-between;
     align-items: start;
     border: 1px solid black;
-    padding: 10px;
+    padding: 15px;
+    overflow: scroll;
+    transition: 0.4s;
 }
 
+.fanfic-box:hover {
+    transition: 0.4s;
+    padding: 10px;
+}
 .fanfic-box-left {
     height: 100px;
     margin:0px;
@@ -369,16 +375,44 @@ p {
     border-radius: 30px;
 }
 
+@keyframes wiggle {
+    0%, 7% {
+      transform: rotateZ(0);
+    }
+    15% {
+      transform: rotateZ(-15deg);
+    }
+    20% {
+      transform: rotateZ(10deg);
+    }
+    25% {
+      transform: rotateZ(-10deg);
+    }
+    30% {
+      transform: rotateZ(6deg);
+    }
+    35% {
+      transform: rotateZ(-4deg);
+    }
+    40%, 100% {
+      transform: rotateZ(0);
+    }
+  }
+
 .arrow {
-    border-radius: 30px;
-    width: 45px;
-    height: 45px;
+    border-radius: 5px;
+    border-width: 3px;
+    border-style: solid;
+    border-color: black;
+    width: 40px;
+    height: 40px;
     transition: 0.5s;
 }
 
 .arrow:hover {
     transition: 0.5s;
     background-color: rgba(255,255,255,0.5);
+    animation: wiggle 2s linear infinite;
 }
 
 /* =============== WebNovel Info container: =========================== */

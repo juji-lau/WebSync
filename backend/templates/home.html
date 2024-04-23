@@ -29,22 +29,21 @@
                 <div> See related fanfictions! </div>
                 <a href="results" class="next">
                     <button class="next-button">
-                        <img src="{{ url_for('static', filename='images/leftarrow.svg') }}"
+                        <img src="{{ url_for('static', filename='images/rightarrow.svg') }}"
                             class="arrow small-icon black-icon" />
                     </button>
                 </a>
             </div>
         </div>
         <div class="search-container">
-            <button id="search-toggle" onClick="toggleInput()"> Search by Description </button>
             <div id="search-title" onClick="sendFocus('title-search')">
                 <!-- can we delete this text, and expand the search bar? -->
-                <div> Search for a web novel: </div>
+                <button id="search-toggle" onClick="toggleInput()"> Search by Summary </button>
                 <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
                 <input class="search-bar" id="title-search" placeholder="Enter a web novel title ... " onkeyup="filterText('title-search','/titleSearch?')"></input>
             </div>
             <div id="search-descr" onClick="sendFocus('descr-search')">
-                <div> Search for a web novel: </div>
+                <button id="search-toggle" onClick="toggleInput()"> Search by Title </button>
                 <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
                 <textarea class="search-box" id="descr-search" placeholder="Enter a web novel summary ... "></textarea>
                 <button id="submit-descr" onClick="filterText('descr-search','/descrSearch?')"> Submit </button>
@@ -64,12 +63,12 @@
                 textInput.style.display = 'flex';
                 textArea.style.display = 'none';
                 textInput.value = textArea.value; // Update input value if necessary
-                toggleButton.textContent = "Search by summary"
+                toggleButton.textContent = "Search by Summary"
             } else {
                 textInput.style.display = 'none';
                 textArea.style.display = 'flex';
                 textArea.value = textInput.value; // Update textarea value if necessary
-                toggleButton.textContent = "Search by title"
+                toggleButton.textContent = "Search by Title"
             }
         }
         function titleButtonTemplate(title) {
