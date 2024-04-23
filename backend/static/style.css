@@ -56,23 +56,25 @@
     position: absolute;
 
     top: 15%;
-    left: 40%;
-
-    font-family: "Noteworthy";
-    font-size: 50px;
-    font-weight: 600;
+    left: 35%;
+    font-family: optima;
+    font-variant: small-caps;
+    font-size: 650%;
+    align-items: center;
+    justify-content: center;
+    font-weight: normal;
     text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.75);
     line-height: 0;
 }
 
 .subtitle {
     position: absolute;
-
-    font-family: shoreline-font;
-    top: 45%;
+    font-family: optima;
+    top: 60%;
     left: 35%;
-    font-size: 14px;
-    font-weight: 30;
+    font-size: 125%;
+    justify-content: center;
+    font-weight: normal;
     color: black;
     line-height: 0;
     padding-bottom: 20px
@@ -84,8 +86,7 @@
     flex-direction: column;
     justify-content: start;
     padding: 5px;
-    background-color: rgba(125, 79, 36, 0.659);
-    /* z index must be 3 or more for the tags button to work */
+    background-color: rgba(124, 74, 31, 0.7);
     font-family: 'Kanit', sans-serif;
     font-size: 13px;
     border-radius: 10px;
@@ -252,8 +253,8 @@ label {
 
 .results-title {
     text-align: center;
-    font-family: 'Kanit', sans-serif;
-    font-size: 30px;
+    font-family: optima;
+    font-size: 200%;
 }
 
 .results-title-container {
@@ -304,6 +305,13 @@ label {
     font-family: 'Kanit', sans-serif;
     color: black;
     font-size: medium;
+    margin:0px;
+}
+.fanfic-author {
+    font-family: 'Kanit', sans-serif;
+    color: darkslategray;
+    font-weight: bold;
+    font-size: small;
     margin:0px;
 }
 
@@ -397,7 +405,10 @@ p {
 
     border-width: 7px 0 0 0;
     border-color: #717171;
-    background-color: #B2A59B;
+    /* background-image: url(https://media.istockphoto.com/id/1283615709/photo/old-brown-paper-parchment-background-design-with-distressed-vintage-stains-and-ink-spatter.jpg?b=1&s=612x612&w=0&k=20&c=dF3PPajNXtXXzoU4Qghwt9Yazu1KFNHuzmPWJ75eGCs=);
+    background-size: cover; */
+    background-color: #21160eb0;
+
     color: white;
     font-family: 'Kanit', sans-serif;
     gap: 10px;
@@ -417,24 +428,30 @@ p {
     margin: 0px;
 }
 
-#selected-author {
-    font-size: 17px;
-}
-
 #selected-title {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 125%;
+    /* font-weight: bold; */
+    font-family: kanit;
+    /* font-weight: bold; */
+    color:rgb(255, 255, 255)
 }
 
+#selected-author {
+    font-size: 125%;
+    font-family: kanit;
+}
 
 #selected-descr {
     /* background-color:red; */
     text-align: start;
+    font-size: 115%;
+    font-family: arial;
 }
 
 
 #genres-container {
     display: grid;
+    font-size: 125%;
     gap: 5px;
     width: 100%;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -445,7 +462,7 @@ p {
 .genre-tag {
     background-color: #FAEED1;
     border-radius: 10px;
-    color: #B2A59B;
+    color: #6b635c;
 }
 
 #slider-value {

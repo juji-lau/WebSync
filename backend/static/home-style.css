@@ -25,6 +25,8 @@ body {
     top: 0%;
     position: relative;
     display: block;
+    /* background-color: rgba(255, 255, 255, 0.5); */
+    /* opacity: .9; */
     background-image: url(https://cdn2.vectorstock.com/i/1000x1000/09/71/coffee-stained-paper-vector-750971.jpg);
     background-size: cover;
     /* Resize the background image to fit the container */
@@ -59,11 +61,12 @@ body {
 
 .title {
     flex: 1;
-    font-family: "Noteworthy";
+    font-family: "Optima";
+    font-variant: small-caps;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 800%;
+    font-size: 1000%;
     text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.75);
     animation: float 6s ease-in-out infinite;
 }
@@ -81,10 +84,10 @@ body {
     justify-content: center;
     z-index: 1;
 }
-
+/* "find fanfictions that match your favorite webnovels" */
 .description {
-    font-family: shoreline-font;
-    font-size: 200%;
+    font-family: optima;
+    font-size: 150%;
     text-align: center;
     flex-direction: column;
     display: flex;
@@ -118,11 +121,13 @@ body {
     justify-content: center;
 }
 
+/* User typed */
 .search-bar {
     background: none;
     width: 60%;
     border-width: 0px 0px 3px 0px;
-    font-family: 'Kanit', sans-serif;
+    font-family: arial;
+    font-size: large;
     border-color: black;
 }
 
@@ -166,13 +171,17 @@ body {
 
 } */
 
+/* Lists the dropdown */
 .title-button {
     width: 100%;
     height: 20px;
     overflow: clip;
     background: none;
     border-style: none;
-    font-family: 'Kanit', sans-serif;
+    font-family: optima;
+    font-weight: bold;
+    /* font-variant: small-caps; */
+    /* font-weight: bold; */
 }
 
 .title-button:hover {
@@ -203,6 +212,7 @@ body {
 
 .next-container {
     display: none;
+    background-color: rgba(255, 246, 230, 0.579);
 }
 
 .book-img-container {
@@ -225,8 +235,9 @@ body {
     text-align: center;
 }
 
+/* Your selected novel */
 .prompt {
-    font-family: 'Kanit', sans-serif;
+    font-family: Optima;
     font-size: 130%;
     text-align: center;
     flex-direction: column;
@@ -237,6 +248,10 @@ body {
 
 #selected-title {
     font-size: 150%;
+    font-family: optima;
+    font-weight: bold;
+    /* font-variant: small-caps; */
+    color:rgb(71, 2, 2)
 }
 
 .next {
@@ -265,7 +280,7 @@ body {
     /* transform: translateY(-3px);
     transform: translateX(-3px); */
     transition: 0.5s;
-    background-color: rgba(255,255,255,0.5);
+    background-color: rgba(133, 126, 126, 0.5);
 }
 
 footer {
@@ -282,21 +297,24 @@ footer {
     display: none;
 }
 
+/* "search for a web novel" */
 #search-title , #search-descr {
     margin: 10px;
     justify-content: center;
     align-items: center;
     gap: 10px;
+    font-size: 150%;
     font-family: 'Kanit', sans-serif;
 }
 
-
+/* Search by description */
 #search-toggle {
     border-radius: 10px;
     background: none ;
     border-style: solid;
     border-color: black;
     font-family: 'Kanit', sans-serif;
+    font-size: 150%;
     transition: 0.5s;
 }
 
