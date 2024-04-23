@@ -13,20 +13,20 @@
             <div class="title"> WebSync </div>
         </div>
         <div class="description-container">
-            <div class="description"> find fan fictions that match your favorite web novels!</div>
+            <div class="description"> Enter the title or a summary of your favorite web novel, and we'll find a related fanfiction!</div>
         </div>
         <div class="book-img-container">
             <img class="large-image" src="{{ url_for('static', filename='images/book.png') }}"/>
         </div>
         <div class="next-container">
             <div class="prompt-container">
-                <div class="prompt"> Your Selected Novel </div>
+                <div class="prompt"> Your Selected Web Novel: </div>
                 <div class="selected-novel-group">
                     <div id="selected-title"></div>
                 </div>
             </div>
             <div>
-                <div> Search for Related Fan-Fictions! </div>
+                <div> See related fanfictions! </div>
                 <a href="results" class="next">
                     <button class="next-button">
                         <img src="{{ url_for('static', filename='images/leftarrow.svg') }}"
@@ -38,14 +38,15 @@
         <div class="search-container">
             <button id="search-toggle" onClick="toggleInput()"> Search by Description </button>
             <div id="search-title" onClick="sendFocus('title-search')">
-                <div> Search for a Web Novel </div>
+                <!-- can we delete this text, and expand the search bar? -->
+                <div> Search for a web novel: </div>
                 <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
-                <input class="search-bar" id="title-search" onkeyup="filterText('title-search','/titleSearch?')"></input>
+                <input class="search-bar" id="title-search" placeholder="Enter a web novel title ... " onkeyup="filterText('title-search','/titleSearch?')"></input>
             </div>
             <div id="search-descr" onClick="sendFocus('descr-search')">
-                <div> Search for a Web Nobel! </div>
+                <div> Search for a web novel: </div>
                 <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image" />
-                <textarea class="search-box" id="descr-search"></textarea>
+                <textarea class="search-box" id="descr-search" placeholder="Enter a web novel summary ... "></textarea>
                 <button id="submit-descr" onClick="filterText('descr-search','/descrSearch?')"> Submit </button>
             </div>
             <div id="button-box"></div>
@@ -63,12 +64,12 @@
                 textInput.style.display = 'flex';
                 textArea.style.display = 'none';
                 textInput.value = textArea.value; // Update input value if necessary
-                toggleButton.textContent = "Search by Title"
+                toggleButton.textContent = "Search by summary"
             } else {
                 textInput.style.display = 'none';
                 textArea.style.display = 'flex';
                 textArea.value = textInput.value; // Update textarea value if necessary
-                toggleButton.textContent = "Search by Description"
+                toggleButton.textContent = "Search by title"
             }
         }
         function titleButtonTemplate(title) {
@@ -85,6 +86,10 @@
             // console.log("h2. in titleButtonEventListener(e) in home.html")
             let nextContainer = document.querySelector(".next-container");
             nextContainer.style.display = 'flex';
+            // Hide the book image; delete below
+            let bookimg = document.querySelector(".book-img-container");
+            bookimg.style.display = 'none';
+
             fetch("/setNovel?" + new URLSearchParams({ title: e.target.textContent }).toString())
                 .then((response) => response.json())
                 // console.log("1. fetched /setNovel?")
@@ -117,7 +122,6 @@
         }
 
         function sendFocus(id) {
-            // console.log("h3. in sendFocus(id) in home.html")
             document.getElementById(id).focus()
         }
 

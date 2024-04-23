@@ -13,7 +13,7 @@
     <div class="full-body-container">
         <div class="header-container">
             <h1 class="title"> WebSync </h1>
-            <h4 class="subtitle"> find fan fictions that match your favorite web novels!</h4>
+            <h4 class="subtitle"> Find fan fictions that match your favorite web novels!</h4>
             <!-- search container end div -->
         </div>
         <div class="solidline"> </div>
@@ -26,7 +26,7 @@
                     </label>
                     <div class="horizontal-input">
                         <img src="{{ url_for('static', filename='images/mag.png') }}" class="small-image"/>
-                        <input class="search-bar" id="tags-search">
+                        <input class="search-bar" id="tags-search", placeholder="Enter a valid tag...">
                         <button id="add-tag-button"> + </button>
                         </input>
                     </div>
@@ -35,12 +35,12 @@
                 <!-- Popularity bar interface -->
                 <div class="input-popularity">
                     <label>
-                        Weight Search by Popularity:
+                        Rank your results by:
                     </label>
                     <div id="slideContainer">
                         <div id="slider-value">
-                            <p> most similar </p>
-                            <p> most popular </p>
+                            <sup> Relevance </sup>
+                            <sup> Popularity </sup>
                         </div>
                         <input type="range" min="0" max="100" value="0" id="size-slider" onchange="showResults()">
                     </div>
@@ -49,7 +49,7 @@
             <div class="tags-container"></div>
             <div class="results-title-container">
                 <div class="results-title">
-                    Results
+                    Fanfiction Results
                 </div>
             </div>
             <div id="answer-box">
@@ -57,21 +57,22 @@
         </div>
         <!-- <div class="novel-container"> -->
         <div class="novel-info-container">
-            <h1> Chosen Web Novel Info</h1>
+            <!-- <h2> Web Novel</h2> -->
+            <label style="font-size: 135%;"><b>Web Novel: </b></label>
             <div id="selected-title"></div>
             <div class="horizontal">
-                <label style="font-size: 17px"><b>Author: </b></label>
+                <label style="font-size: 135%"><b>Author: </b></label>
                 <div id="selected-author"></div>
             </div>
             <div class="novel-info-group">
-                <label style="font-size: 17px;"><b>
+                <label style="font-size: 135%;"><b>
                     Genres: 
                 </b></label>
                 <div id="genres-container">
                 </div>
             </div>
             <div class="novel-info-group">
-                <label style="font-size: 17px;"><b>Description: </b></label>
+                <label style="font-size: 135%;"><b>Summary: </b></label>
                 <div id="selected-descr"></div>
             </div>
         </div>
@@ -163,7 +164,8 @@
                 // console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
                 return `<div class='fanfic-box'>
                     <div class='fanfic-box-left'>
-                        <h3 class='fanfic-title'>${fanfic.title} by ${fanfic.author}</h3>
+                        <h3 class='fanfic-title'>${fanfic.title}</h3>
+                        <p class='fanfic-author'>${fanfic.author}</p>
                         <p class='fanfic-desc'>${fanfic.description}</p>
                         <div class='horizontal'> 
                             <img class='small-image' src="{{ url_for('static', filename='images/eye.svg') }}"/>
