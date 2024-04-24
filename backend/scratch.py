@@ -18,9 +18,6 @@ from sklearn.decomposition import TruncatedSVD
 # TODO: currently webnovel["title"] gives a list of associated webnovel titles\
 # right now, we are returning webnovel["title"][0].  Find a way to \
 # incorporate all associated titles
-# TODO: edit distance search for webnovels
-# TODO: tokenize fanfics and webovels using TfidfVectorizer for stop words, min df, and max df
-
 """
 fic_id_to_index: maps the fanfiction id to a zero-based index. 
   fic_id_to_index[fanfic_id] = int
@@ -137,15 +134,19 @@ def tokenize_fanfics(tokenize_method: Callable[[str], List[str]],
     counter = 0
     tokenized_descriptions = []
     for fanfic_dict in input_fanfics:
-      fanfic_id = fanfic_dict['id']
-      fanfic_description = fanfic_dict['description']
-      tokenized_descriptions.append({"id":fanfic_id, "tokenized_description":tokenize_method(fanfic_description)})
-      # add to fic_id_to_index, and index_to_fic_id:
-      fic_id_to_index[fanfic_id] = counter
-      index_to_fic_id[counter] = fanfic_id
-      popularity = fanfic_dict['hits'] + fanfic_dict['kudos'] + fanfic_dict['comments'] + fanfic_dict['bookmarks']
-      fanfic_id_to_popularity[counter] = popularity
-      counter+=1
+        fanfic_id = fanfic_dict['id']
+        fanfic_description = fanfic_dict['description']
+        tokenized_descriptions.append({"id":fanfic_id, "tokenized_description":tokenize_method(fanfic_description)})
+        
+        # add to fic_id_to_index, and index_to_fic_id:
+        fic_id_to_index[fanfic_id] = counter
+        index_to_fic_id[counter] = fanfic_id
+        
+        # popularity = fanfic_dict['hits'] + fanfic_dict['kudos'] + fanfic_dict['comments'] + fanfic_dict['bookmarks']
+        popularity = (fanfic_dict['kudos'] * fanfic_dict['chapters'])/fanfic_dict['hits']
+        fanfic_id_to_popularity[counter] = popularity
+        
+        counter+=1
     return tokenized_descriptions  
 
 def tokenize_webnovels(tokenize_method: Callable[[str], List[str]], 
@@ -171,12 +172,12 @@ def tokenize_webnovels(tokenize_method: Callable[[str], List[str]],
     counter = 0
     tokenized_descriptions = []
     for webnovel_dict in input_webnovels:
-      webnovel_title = webnovel_dict['titles'][0]
-      webnovel_description = webnovel_dict['description']
-      tokenized_descriptions.append({"index":counter, "tokenized_description":tokenize_method(webnovel_description)})
-      webnovel_title_to_index[webnovel_title] = counter
-      index_to_webnovel_title[counter] = webnovel_title
-      counter+=1
+        webnovel_title = webnovel_dict['titles'][0]
+        webnovel_description = webnovel_dict['description']
+        tokenized_descriptions.append({"index":counter, "tokenized_description":tokenize_method(webnovel_description)})
+        webnovel_title_to_index[webnovel_title] = counter
+        index_to_webnovel_title[counter] = webnovel_title
+        counter+=1
     return tokenized_descriptions    
 
 def build_inverted_index(msgs: List[dict]) -> dict:
@@ -213,26 +214,26 @@ def build_inverted_index(msgs: List[dict]) -> dict:
     """
     iid = {}
     for msg in range(0, len(msgs)):
-      toks = msgs[msg]['tokenized_description']
-      first_inst = {} # dictionary for each doc of first instances
-      for tok in toks:
-        #first_inst = false by default
-        # token is not in dictionary
-        if tok not in iid:
-          tup = (msg, 1)
-          iid[tok] = [(tup)]
-          first_inst[tok] = 0
-        else:       # token is in the dictionary
-          # First instance for this doc
-          if tok not in first_inst:
-            tup = (msg, 1)
-            iid[tok].append(tup)
-            first_inst[tok] = len(iid[tok])-1
-          else:
-            # increment count
-            curr_count = (iid[tok])[first_inst[tok]][1]
-            tup = (msg, curr_count+1)
-            (iid[tok])[first_inst[tok]] = tup
+        toks = msgs[msg]['tokenized_description']
+        first_inst = {} # dictionary for each doc of first instances
+        for tok in toks:
+            #first_inst = false by default
+            # token is not in dictionary
+            if tok not in iid:
+                tup = (msg, 1)
+                iid[tok] = [(tup)]
+                first_inst[tok] = 0
+            else:       # token is in the dictionary
+                # First instance for this doc
+                if tok not in first_inst:
+                    tup = (msg, 1)
+                    iid[tok].append(tup)
+                    first_inst[tok] = len(iid[tok])-1
+                else:
+                    # increment count
+                    curr_count = (iid[tok])[first_inst[tok]][1]
+                    tup = (msg, curr_count+1)
+                    (iid[tok])[first_inst[tok]] = tup
     return iid
 
 def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=0.95):
@@ -263,10 +264,10 @@ def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=0.95):
     """
     idf = {}
     for term in inv_idx: 
-      term_df = len(inv_idx[term])
+        term_df = len(inv_idx[term])
 
-      if term_df/n_docs <= max_df_ratio and term_df >= min_df:
-        idf[term] = math.log2(n_docs/(1 + term_df))
+        if term_df/n_docs <= max_df_ratio and term_df >= min_df:
+            idf[term] = math.log2(n_docs/(1 + term_df))
     return idf
 
 def compute_doc_norms(index, idf, n_docs):
@@ -287,10 +288,10 @@ def compute_doc_norms(index, idf, n_docs):
     norms = np.zeros((n_docs))
 
     for term in idf: 
-      score = idf[term]
-      term_docs = index[term]
-      for doc, tf in term_docs: 
-        norms[doc] += (tf*score)**2
+        score = idf[term]
+        term_docs = index[term]
+        for doc, tf in term_docs: 
+            norms[doc] += (tf*score)**2
     return np.sqrt(norms)
 
 def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> dict:
@@ -316,12 +317,12 @@ def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> di
     """
     doc_scores = {}
     for query_word in query_word_counts: 
-      query_word_count = query_word_counts[query_word]
-      for (doc, tf) in index[query_word]:
-        if doc not in doc_scores: 
-          doc_scores[doc] = tf*idf[query_word]*query_word_count*idf[query_word]
-        else:
-          doc_scores[doc] += tf*idf[query_word]*query_word_count*idf[query_word]
+        query_word_count = query_word_counts[query_word]
+        for (doc, tf) in index[query_word]:
+            if doc not in doc_scores: 
+                doc_scores[doc] = tf*idf[query_word]*query_word_count*idf[query_word]
+            else:
+                doc_scores[doc] += tf*idf[query_word]*query_word_count*idf[query_word]
     return doc_scores
 
 def compute_cossim_for_webnovel(
@@ -364,17 +365,17 @@ def compute_cossim_for_webnovel(
 
     norm = 0
     for term in webnovel_unique_toks: 
-      if term in fanfic_idf and term in webnovel_word_counts:
-        norm += (webnovel_word_counts[term]*fanfic_idf[term])**2
-      elif term not in fanfic_idf and term in webnovel_word_counts:
-        del webnovel_word_counts[term]
+        if term in fanfic_idf and term in webnovel_word_counts:
+            norm += (webnovel_word_counts[term]*fanfic_idf[term])**2
+        elif term not in fanfic_idf and term in webnovel_word_counts:
+            del webnovel_word_counts[term]
     norms = math.sqrt(norm) * fanfic_norms
 
     doc_scores = score_func(webnovel_word_counts, fanfic_inv_index, fanfic_idf)
 
     cossim = []
     for doc in doc_scores:
-      cossim.append((doc_scores[doc]/norms[doc], doc))
+        cossim.append((doc_scores[doc]/norms[doc], doc))
 
     result = sorted(cossim, key=lambda x: x[0], reverse=True)[:50]
     return result
@@ -438,6 +439,7 @@ def get_svd_tags(webnovel_data, fanfic_data, num_tags=235, sim_threshold=0.35, m
         # make the list of tags into a single string
         tag_string = t_pattern.join(w["tags"])
         all_tags.append({"title": w["titles"][0], "tags" : tag_string})
+    
     for f in fanfic_data:         
         # record the work title
         work2index.append(f["title"])
@@ -534,7 +536,7 @@ def main():
     file = 'webnovel_to_fanfic_cossim.json'
 
     with open(file, 'w', encoding='utf-8') as f:
-         json.dump({'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'webnovel_title_to_index':webnovel_title_to_index, 'fanfic_id_to_popularity':fanfic_id_to_popularity, 'tags_list':tags_list}, f)
+        json.dump({'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'webnovel_title_to_index':webnovel_title_to_index, 'fanfic_id_to_popularity':fanfic_id_to_popularity, 'tags_list':tags_list}, f)
 
 
 if __name__ == "__main__":
