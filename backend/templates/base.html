@@ -164,7 +164,7 @@
                 // console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
                 return `<div class='fanfic-box'>
                     <div class='fanfic-box-left'>
-                        <h3 class='fanfic-title'>${fanfic.title}</h3>
+                        <h3 class='fanfic-title'><a href="https://archiveofourown.org/works/${fanfic.fanfic_id}" target="_blank">${fanfic.title}</a></h3>
                         <p class='fanfic-author'>${fanfic.author}</p>
                         <p class='fanfic-desc'>${fanfic.description}</p>
                         <div class='horizontal'> 
