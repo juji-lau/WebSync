@@ -86,15 +86,9 @@ def json_search(query):
     """
     print("a1. In json_search(query) in app.py          No app.route()")
     matches = []
-    titles = set()
     for i in range (len(novel_titles)):
-        for j in range(len(novel_titles[i])):
-            if query.lower() in novel_titles[i][j].lower().replace(u"\u2019", "'") and query != "" and novel_titles[i][0] not in titles:
-                matches.append({'title': novel_titles[i][0],'descr': novel_descriptions[i]})
-                titles.add(novel_titles[i][0])
-
-        # if query.lower() in novel_titles[i][0].lower().replace(u"\u2019", "'") and query != "":
-        #     matches.append({'title': novel_titles[i][0],'descr':novel_descriptions[i]})
+        if query.lower() in novel_titles[i][0].lower() and query != "":
+            matches.append({'title': novel_titles[i][0],'descr':novel_descriptions[i]})
     return matches
 
 def user_description_search(user_description):
@@ -133,8 +127,14 @@ def recommendations():
     """
     print("a2. In recomendations() app.py           app.route(/fanfic-recs/)")
     weight = request.args.get("popularity_slider")
-
-    return webnovel_to_top_fics(session['title'].replace("'", u"\u2019"), 49, int(weight)/100)
+    results = webnovel_to_top_fics(session['title'], 49, int(weight)/100)
+    count = 0
+    while len(results) < 10 and count <= 400:
+        results = webnovel_to_top_fics(session['title'], 100 + count, int(weight)/100)
+        count += 50
+ 
+    print(len(results))
+    return results
 
 def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
     """
@@ -143,7 +143,7 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
     webnovel_title --> the title of the user queried webnovel
     num_fics: the number of results we output <50
     outputs:
-    the top fanfiction informations. Can include: 
+    the top 10 fanfiction information. Can include: 
         - fanfic_id
         - fanfic_titles
         - descriptions
@@ -156,11 +156,9 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
     top_n = np.copy(sorted_fanfics_tuplst[:num_fics])
     max_pop = np.max(list(fic_popularities.values()))
     print(max_pop)
-    print(top_n[:10])
     for fic_tuple in top_n:
         fic_tuple[0] = fic_popularities[str(int(fic_tuple[1]))] / max_pop * popularity_weight + fic_tuple[0] * (1 - popularity_weight)
-    print(top_n[:10])
-    top_n = sorted(top_n, key=lambda x: x[0], reverse=True)[:10]
+    top_n = sorted(top_n, key=lambda x: x[0], reverse=True)[:num_fics]
     top_n_fanfic_indexes = [t[1] for t in top_n]
     top_n_fanfics = []
     for i in top_n_fanfic_indexes:
@@ -174,7 +172,6 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
         info_dict["kudos"] = fanfics[fanfic_id]["kudos"]                #get kudos
         info_dict["tags"] = fanfics[fanfic_id]["tags"]                  # get tags
         top_n_fanfics.append(info_dict)
-    # filter the results by tag if the user has tags
     if len(user_input_tags) != 0:
         top_n_fanfics = filter_fanfics(top_n_fanfics, user_input_tags)
     return top_n_fanfics
@@ -253,8 +250,6 @@ def getNovel():
     }
     """
     print("a8. In getNovel() in app.py          app.route(/getNovel)")
-    # reset all the user input tags
-    user_input_tags.clear()
     index = session['title-index']
     returnDict = {'title': novel_titles[index],
                   'descr':novel_descriptions[index],
@@ -288,9 +283,10 @@ def removeTags():
     """ Links to function addTag(e) in home.html """
     print("a10. in removeTags() in app.py().            app.route(/removeTag) ")
     tag = request.args.get("tag")
+    print("Tag removed: ", tag)
     print("Current tags: ", session['tags'])
-    print("Tag to be removed: ", tag)
     session['tags'].remove(tag)
+    print(session['tags'])
     session.modified = True
     user_input_tags.remove(tag)
     print("After removing, current tags", user_input_tags)
