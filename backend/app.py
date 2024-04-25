@@ -143,7 +143,7 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
     webnovel_title --> the title of the user queried webnovel
     num_fics: the number of results we output <50
     outputs:
-    the top 10 fanfiction information. Can include: 
+    the top fanfiction informations. Can include: 
         - fanfic_id
         - fanfic_titles
         - descriptions
@@ -174,6 +174,7 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
         info_dict["kudos"] = fanfics[fanfic_id]["kudos"]                #get kudos
         info_dict["tags"] = fanfics[fanfic_id]["tags"]                  # get tags
         top_n_fanfics.append(info_dict)
+    # filter the results by tag if the user has tags
     if len(user_input_tags) != 0:
         top_n_fanfics = filter_fanfics(top_n_fanfics, user_input_tags)
     return top_n_fanfics
@@ -252,6 +253,8 @@ def getNovel():
     }
     """
     print("a8. In getNovel() in app.py          app.route(/getNovel)")
+    # reset all the user input tags
+    user_input_tags.clear()
     index = session['title-index']
     returnDict = {'title': novel_titles[index],
                   'descr':novel_descriptions[index],
@@ -285,10 +288,9 @@ def removeTags():
     """ Links to function addTag(e) in home.html """
     print("a10. in removeTags() in app.py().            app.route(/removeTag) ")
     tag = request.args.get("tag")
-    print("Tag removed: ", tag)
     print("Current tags: ", session['tags'])
+    print("Tag to be removed: ", tag)
     session['tags'].remove(tag)
-    print(session['tags'])
     session.modified = True
     user_input_tags.remove(tag)
     print("After removing, current tags", user_input_tags)
