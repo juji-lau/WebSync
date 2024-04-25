@@ -151,6 +151,8 @@
                             })
                         }
                     })
+                // makes sure existing tags is empty
+
                 // allows users to input tags
                 let addTagButton = document.getElementById('add-tag-button');
                 //console.log("called document.getElementById('add-tag-button')")
@@ -247,13 +249,12 @@
                     .then((response) => response.json())
                     // console.log("1. fetched /fanfic-recs")
 
-                    .then((data) => data.forEach(row => {
-                        //console.log("2. fetched /fanfic-recs")
+                    .then((data) => (data.length > 0) ? data.forEach(row => {
                         let result = document.createElement("div");
                         result.setAttribute('id', row.fanfic_id.toString());
                         result.innerHTML = answerBoxTemplate(row);
                         document.getElementById("answer-box").appendChild(result);
-                    }));
+                    }) : document.getElementById("answer-box").innerHTML = "This webnovel has no recommendations with this tagset...");
             }
 
             function query_id(fanfic_id) {

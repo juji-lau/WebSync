@@ -494,7 +494,7 @@ def filter_fanfics(fanfics, tags_list):
     for fanfic in fanfics: 
         fanfic_tags_list = [tag.lower() for tag in fanfic["tags"]]
         fanfic_tags_set = set(fanfic_tags_list)
-        print("OG tagset: ", tags_set)
+        print("Current user tagset: ", tags_set)
         print("FANFIC tags: ", fanfic_tags_set)
         if len(fanfic_tags_set.intersection(tags_set)) > 0:
             filtered_fanfics.append(fanfic)
