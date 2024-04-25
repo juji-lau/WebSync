@@ -86,9 +86,15 @@ def json_search(query):
     """
     print("a1. In json_search(query) in app.py          No app.route()")
     matches = []
+    titles = set()
     for i in range (len(novel_titles)):
-        if query.lower() in novel_titles[i][0].lower() and query != "":
-            matches.append({'title': novel_titles[i][0],'descr':novel_descriptions[i]})
+        for j in range(len(novel_titles[i])):
+            if query.lower() in novel_titles[i][j].lower().replace(u"\u2019", "'") and query != "" and novel_titles[i][0] not in titles:
+                matches.append({'title': novel_titles[i][0],'descr': novel_descriptions[i]})
+                titles.add(novel_titles[i][0])
+
+        # if query.lower() in novel_titles[i][0].lower().replace(u"\u2019", "'") and query != "":
+        #     matches.append({'title': novel_titles[i][0],'descr':novel_descriptions[i]})
     return matches
 
 def user_description_search(user_description):
@@ -128,7 +134,7 @@ def recommendations():
     print("a2. In recomendations() app.py           app.route(/fanfic-recs/)")
     weight = request.args.get("popularity_slider")
 
-    return webnovel_to_top_fics(session['title'], 49, int(weight)/100)
+    return webnovel_to_top_fics(session['title'].replace("'", u"\u2019"), 49, int(weight)/100)
 
 def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
     """
