@@ -406,6 +406,10 @@ p {
     animation: wiggle 2s linear infinite;
 }
 
+button:hover {
+    transition: 0.5s;
+    animation: wiggle 2s linear infinite;
+}
 /* =============== WebNovel Info container: =========================== */
 
 .novel-info-container {
