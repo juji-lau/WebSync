@@ -193,7 +193,7 @@ def results():
     """ Called when the user clicks the --> arrow on the home page."""
     print("a5. In results() in app.py           app.route(/results)")
     session['tags'] = None
-
+    print(session)
     return render_template('base.html',title="sample html")
     
 
