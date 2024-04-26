@@ -27,7 +27,7 @@
             </div>
             <div>
                 <div> See related fanfictions! </div>
-                <a href="results" class="next">
+                <a id='results-next' href="results" class="next">
                     <button class="next-button">
                         <img src="{{ url_for('static', filename='images/rightarrow.svg') }}"
                             class="arrow small-icon black-icon" />
@@ -96,18 +96,26 @@
             // Hide the book image; delete below
             let bookimg = document.querySelector(".book-img-container");
             bookimg.style.display = 'none';
+            document.getElementById("results-next").href =  "results?" + new URLSearchParams({ title: e.target.textContent }).toString()
 
-            fetch("/setNovel?" + new URLSearchParams({ title: e.target.textContent }).toString())
-                .then((response) => response.json())
-                // console.log("1. fetched /setNovel?")
-                .then((data) => {
-                    //  console.log("2. fetched /setNovel?")
-                    titleContainer = document.getElementById("selected-title")
-                    titleContainer.textContent = data['title']
-                    let input = document.getElementById('title-search')
-                    input.value = ""
-                    filterText('title-search')
-                })
+            titleContainer = document.getElementById("selected-title")
+            titleContainer.textContent = e.target.textContent
+
+            // fetch("/setNovel?" + new URLSearchParams({ title: e.target.textContent }).toString())
+            //     .then((response) => response.json())
+            //     // console.log("1. fetched /setNovel?")
+            //     .then((data) => {
+            //         console.log("set novel");
+            //         console.log(data['title']);
+            //         //  console.log("2. fetched /setNovel?")
+            //         titleContainer = document.getElementById("selected-title")
+            //         titleContainer.textContent = data['title']
+            //         document.getElementById("results-next").href = document.getElementById("results-next").href + "?" + new URLSearchParams({ title: e.target.textContent }).toString()
+                    
+            //         let input = document.getElementById('title-search')
+            //         input.value = ""
+            //         filterText('title-search')
+            //     })
         }
 
         function filterText(id, route) {
