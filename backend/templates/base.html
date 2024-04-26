@@ -59,7 +59,7 @@
         <div class="novel-info-container">
             <!-- <h2> Web Novel</h2> -->
             <label style="font-size: 135%;"><b>Web Novel: </b></label>
-            <div id="selected-title"></div>
+            <div id="selected-title">{{webnovel_title}}</div>
             <div class="horizontal">
                 <label style="font-size: 135%"><b>Author: </b></label>
                 <div id="selected-author"></div>
@@ -104,29 +104,30 @@
                 deleteButton.textContent = "x";
                 deleteButton.addEventListener('click', () => {
                     tagContainer.removeChild(newTag);
-                    fetch("/removeTag?" + new URLSearchParams({ tag: inputTag }).toString())
-                        .then((response) => response.json())
-                        .then((data) => {
-                            showResults();
-                        })
+                    // fetch("/removeTag?" + new URLSearchParams({ tag: inputTag }).toString())
+                    //     .then((response) => response.json())
+                    //     .then((data) => {
+                    //         showResults();
+                    //     })
+                    showResults();
                 });
                 newTag.appendChild(deleteButton);
                 tagContainer.appendChild(newTag);
-                fetch("/addTag?" + new URLSearchParams({ tag: inputTag }).toString())
-                    .then((response) => response.json())
-                    .then((data) => {
-                        showResults();
-                    })
+                // fetch("/addTag?" + new URLSearchParams({ tag: inputTag }).toString())
+                //     .then((response) => response.json())
+                //     .then((data) => {
+                //         showResults();
+                //     });
+                showResults();
                 document.getElementById('tags-search').value = "";
                 
             }
 
             function setup() {
-                fetch("/getNovel?")
+                let w_title = document.getElementById("selected-title").textContent
+                fetch("/getNovel?" + new URLSearchParams({ title: w_title }).toString())
                     .then((response) => response.json())
                     .then((data) => {
-                        let titleContainer = document.getElementById("selected-title")
-                        titleContainer.textContent = data['title'][0]
                         let authorContainer = document.getElementById("selected-author")
                         authorContainer.textContent = data['author']
                         let descrContainer = document.getElementById("selected-descr")
@@ -150,7 +151,7 @@
                                 genreContainer.appendChild(genreTag);
                             })
                         }
-                    })
+                    });
                 // allows users to input tags
                 let addTagButton = document.getElementById('add-tag-button');
                 //console.log("called document.getElementById('add-tag-button')")
@@ -173,6 +174,9 @@
                             <img class='small-image' src="{{ url_for('static', filename='images/thumbs-up.svg') }}"/>
                             <p class='fanfic-kudos'> ${fanfic.kudos}</p>
                         </div>
+                        <div class='horizontal'> 
+                            <p class='fanfic-score'> Score: ${fanfic.score}</p>
+                        </div> 
                     </div>
                     <div class='answer-button-display'>
                         <button onclick='query_id("${fanfic.fanfic_id}")' class='answer-info-button'>Info</button>
@@ -242,8 +246,15 @@
             function showResults() {
                 //console.log("b5. in showResults(title) in base.html")
                 document.getElementById("answer-box").innerHTML = "";
+                var w_title = document.getElementById('selected-title');
                 const slider = document.getElementById("size-slider");
-                fetch("/fanfic-recs/?" + new URLSearchParams({ popularity_slider: slider.value }).toString())
+                
+                let user_tags = [];
+                document.querySelector('.tags-container').querySelectorAll('.tag-name').forEach(tag => {
+                    user_tags.push(tag.textContent);
+                });
+
+                fetch("/fanfic-recs/?" + new URLSearchParams({ title: w_title.textContent, popularity_slider: slider.value, tags: user_tags}).toString())
                     .then((response) => response.json())
                     // console.log("1. fetched /fanfic-recs")
 
