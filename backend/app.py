@@ -159,7 +159,7 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
     webnovel_index = webnovel_title_to_index[webnovel_title]
     sorted_fanfics_tuplst = cossims[str(webnovel_index)]
     top_n = np.copy(sorted_fanfics_tuplst[:num_fics])
-    max_pop = np.max(list(fic_popularities.values()))
+    max_pop = np.max(list(fic_popularities.values())) / 10
     print(max_pop)
     for fic_tuple in top_n:
         fic_tuple[0] = fic_popularities[str(int(fic_tuple[1]))] / max_pop * popularity_weight + fic_tuple[0] * (1 - popularity_weight)
@@ -178,7 +178,7 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
         info_dict["hits"] = fanfics[fanfic_id]["hits"]                  # get hits
         info_dict["kudos"] = fanfics[fanfic_id]["kudos"]                # get kudos
         info_dict["tags"] = fanfics[fanfic_id]["tags"]                  # get tags
-        info_dict["score"] = top_n[count][0]
+        info_dict["score"] = round(top_n[count][0],4)
         count += 1
         top_n_fanfics.append(info_dict)
     user_input_tags = request.args.get("tags").split(",")

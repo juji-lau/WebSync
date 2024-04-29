@@ -91,6 +91,9 @@
             function addTag(e) {
                 console.log("in add tag");
                 let inputTag = document.getElementById('tags-search').value;
+                if (inputTag === "") {
+                    return;
+                }
                 let tagContainer = document.querySelector('.tags-container');
                 let newTag = document.createElement('div');
                 newTag.setAttribute("class", "tag");
@@ -174,13 +177,11 @@
                             <img class='small-image' src="{{ url_for('static', filename='images/thumbs-up.svg') }}"/>
                             <p class='fanfic-kudos'> ${fanfic.kudos}</p>
                         </div>
-                        <div class='horizontal'> 
-                            <p class='fanfic-score'> Score: ${fanfic.score}</p>
-                        </div> 
+                        
                     </div>
                     <div class='answer-button-display'>
+                        <p class='fanfic-score'> Score: ${fanfic.score}</p>
                         <button onclick='query_id("${fanfic.fanfic_id}")' class='answer-info-button'>Info</button>
-                        <button onclick='document.getElementById("${fanfic.fanfic_id}").remove()' class='answer-remove-button'>Remove</button>
                     </div>
                 </div>`
             }
@@ -197,7 +198,7 @@
                 header.textContent = "Tags: ";
                 header.setAttribute('class', 'fanfic-tag-header');
                 container.appendChild(header);
-                for (let i = 0; i < 5; i++){
+                for (let i = 0; i < fanfic.tags.length; i++){
                     const tag = document.createElement('div');
                     tag.setAttribute('class','fanfic-tag');
                     tag.textContent = fanfic.tags[i];

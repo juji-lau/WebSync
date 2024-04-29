@@ -100,7 +100,9 @@
 
             titleContainer = document.getElementById("selected-title")
             titleContainer.textContent = e.target.textContent
-
+            let input = document.getElementById('title-search')
+            input.value = ""
+            filterText('title-search')
             // fetch("/setNovel?" + new URLSearchParams({ title: e.target.textContent }).toString())
             //     .then((response) => response.json())
             //     // console.log("1. fetched /setNovel?")

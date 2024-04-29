@@ -131,13 +131,12 @@
     justify-self: flex-start;
     align-self: flex-start;
     background-color: none;
-    
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-column-gap: 5px;
     box-sizing: border-box;
     /* grid-row: inherit; */
-    width: 100%;
+    width: 90%;
     justify-content: start;
     align-items: center;
     /* gap: 5px 10px; */
@@ -168,8 +167,8 @@ label {
 }
 
 .tag {
+    background-color: rgba(240,240,240,0.9);
     color: black;
-    background-color: white;
     border-color: black;
     border-width: 1px;
     display: flex;
@@ -205,7 +204,7 @@ label {
 }
 
 .delete-button:hover{
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.7);
     color: whitesmoke;
     transition: 0.5s;
     font-weight: bolder;
@@ -264,17 +263,19 @@ label {
 #answer-box {
     display: flex;
     margin-top: 50px;
-    margin-left: 30px;
-    margin-right: 20px;
+    margin-left: 5%;
     margin-bottom: 30px;
     overflow: scroll;
     flex-direction: column;
     justify-content: start;
     align-items: stretch;
     gap: 20px;
+    width: 100%;
+    text-align: center;
 }
 
 .fanfic-box {
+    text-align: start;
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     display: flex;
@@ -285,17 +286,19 @@ label {
     padding: 15px;
     overflow: scroll;
     transition: 0.4s;
+    width: 90%;
 }
 
 .fanfic-box:hover {
     transition: 0.4s;
-    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 .fanfic-box-left {
     margin:0px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    width: 70%;
 }
 
 .fanfic-title {
@@ -337,8 +340,9 @@ p {
 .fanfic-extra-info-box {
     border: 1px solid black;
     border-top-width: 0px;
-    padding: 10px;
+    padding: 15px;
     border-radius: 5px;
+    width: 90%;
     background-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -347,18 +351,20 @@ p {
     justify-content: start;
     align-items: center;
     gap: 20px;
+    overflow-x: scroll;
+    width: 100%;
 }
 
 /* ======================================================================== */
 
 .back-button {
     position: fixed;
-    left: 17.5%;
-    top: 87%;
+    left: 0;
+    top: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 3;
+    z-index: 6;
     background:none;
     border: none;
     width: 40px;
