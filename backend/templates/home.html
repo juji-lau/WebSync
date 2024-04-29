@@ -66,7 +66,6 @@
             var textInput = document.getElementById('search-title');
             var textArea = document.getElementById('search-descr');
             var toggleButton = document.getElementById('search-toggle');
-            console.log("hi");
             if (textInput.style.display === 'none') {
                 textInput.style.display = 'flex';
                 textArea.style.display = 'none';
@@ -80,17 +79,14 @@
             }
         }
         function titleButtonTemplate(title) {
-            // console.log("h1. in titleButtonTemplate(title) in home.html")
             let titleButton = document.createElement('button');
             titleButton.textContent = title;
             titleButton.setAttribute("class", "title-button")
             titleButton.addEventListener("click", titleButtonEventListener)
-            // console.log(titleButton)
             return titleButton;
         }
 
         function titleButtonEventListener(e) {
-            // console.log("h2. in titleButtonEventListener(e) in home.html")
             let nextContainer = document.querySelector(".next-container");
             nextContainer.style.display = 'flex';
             // Hide the book image; delete below
@@ -103,32 +99,14 @@
             let input = document.getElementById('title-search')
             input.value = ""
             filterText('title-search')
-            // fetch("/setNovel?" + new URLSearchParams({ title: e.target.textContent }).toString())
-            //     .then((response) => response.json())
-            //     // console.log("1. fetched /setNovel?")
-            //     .then((data) => {
-            //         console.log("set novel");
-            //         console.log(data['title']);
-            //         //  console.log("2. fetched /setNovel?")
-            //         titleContainer = document.getElementById("selected-title")
-            //         titleContainer.textContent = data['title']
-            //         document.getElementById("results-next").href = document.getElementById("results-next").href + "?" + new URLSearchParams({ title: e.target.textContent }).toString()
-                    
-            //         let input = document.getElementById('title-search')
-            //         input.value = ""
-            //         filterText('title-search')
-            //     })
         }
 
         function filterText(id, route) {
-            // console.log("h2. in filterText(id) in home.html")
             var count = 0;
             document.getElementById("button-box").innerHTML = ""
             fetch(route + new URLSearchParams({ inputText: document.getElementById(id).value }).toString())
                 .then((response) => response.json())
-                // console.log("1. fetched /episodes?")
                 .then((data) => new Set(data).forEach(row => {
-                    // console.log("2. fetched /episodes?")
                     if (count < 5) {
                         document.getElementById("button-box").appendChild(titleButtonTemplate(row.title))
                         count++;

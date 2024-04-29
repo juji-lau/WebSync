@@ -25,8 +25,6 @@ body {
     top: 0%;
     position: relative;
     display: block;
-    /* background-color: rgba(255, 255, 255, 0.5); */
-    /* opacity: .9; */
     background-image: url(https://cdn2.vectorstock.com/i/1000x1000/09/71/coffee-stained-paper-vector-750971.jpg);
     background-size: cover;
     /* Resize the background image to fit the container */
@@ -150,27 +148,6 @@ body {
     justify-content: start;
 }
 
-/* #button-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    gap: 5px;
-    width: 60%;
-    left: 30%;
-    overflow: scroll;
-    max-height: 5px;
-    transition: max-height 0.75s;
-    background-color: rgba(227, 19, 210, 0.829);
-}
-
-#button-box:hover {
-    max-height: 200px;
-    transition: max-height 0.75s;
-    background-color: rgba(215, 16, 16, 0.829);
-
-} */
-
 /* Lists the dropdown */
 .title-button {
     width: 100%;
@@ -180,8 +157,6 @@ body {
     border-style: none;
     font-family: optima;
     font-weight: bold;
-    /* font-variant: small-caps; */
-    /* font-weight: bold; */
 }
 
 .title-button:hover {
@@ -338,8 +313,8 @@ footer {
 /* Search by description */
 #search-toggle {
     border-radius: 10px;
-    background: none ;
     border-style: solid;
+    background: none;
     border-color: black;
     font-family: 'Kanit', sans-serif;
     font-size: 70%;
@@ -347,8 +322,17 @@ footer {
     width: 70%;
 }
 
-#search-toggle:hover {
+#search-toggle:hover, #submit-descr:hover {
     background-color: black;
     color: rgb(215, 193, 125);
     transition:0.5s;
+}
+
+#submit-descr {
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-style: solid;
+    border-color: black;
+    font-family: 'Kanit', sans-serif;
+    transition: 0.5s;
 }

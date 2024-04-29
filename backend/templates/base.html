@@ -89,7 +89,6 @@
         <script>
             // Adds and removes tags
             function addTag(e) {
-                console.log("in add tag");
                 let inputTag = document.getElementById('tags-search').value;
                 if (inputTag === "") {
                     return;
@@ -103,24 +102,13 @@
                 newTag.appendChild(tagName);
                 let deleteButton = document.createElement('button');
                 deleteButton.setAttribute("class", "delete-button");
-                // deleteButton.setAttribute('id', inputTag)
                 deleteButton.textContent = "x";
                 deleteButton.addEventListener('click', () => {
                     tagContainer.removeChild(newTag);
-                    // fetch("/removeTag?" + new URLSearchParams({ tag: inputTag }).toString())
-                    //     .then((response) => response.json())
-                    //     .then((data) => {
-                    //         showResults();
-                    //     })
                     showResults();
                 });
                 newTag.appendChild(deleteButton);
                 tagContainer.appendChild(newTag);
-                // fetch("/addTag?" + new URLSearchParams({ tag: inputTag }).toString())
-                //     .then((response) => response.json())
-                //     .then((data) => {
-                //         showResults();
-                //     });
                 showResults();
                 document.getElementById('tags-search').value = "";
                 
@@ -140,7 +128,6 @@
                         if (genres.length > 4) {
                             for (var i = 0; i < 4; i++) {
                                 const genreTag = document.createElement('div');
-                                // console.log(genreTag)
                                 genreTag.setAttribute('class', 'genre-tag');
                                 genreTag.textContent = genres[i];
                                 genreContainer.appendChild(genreTag);
@@ -148,7 +135,6 @@
                         } else {        // just display all existing tags
                             genres.forEach((genre) => {
                                 const genreTag = document.createElement('div');
-                                // console.log(genreTag)
                                 genreTag.setAttribute('class', 'genre-tag');
                                 genreTag.textContent = genre;
                                 genreContainer.appendChild(genreTag);
@@ -157,15 +143,12 @@
                     });
                 // allows users to input tags
                 let addTagButton = document.getElementById('add-tag-button');
-                //console.log("called document.getElementById('add-tag-button')")
                 addTagButton.addEventListener('click', addTag);
-                //console.log("called addTagButton.addEventListener('click', addTag);")
                 showResults();
             }
 
 
             function answerBoxTemplate(fanfic) {
-                // console.log("b3. in answreBoxTemplate(title, titleDesc) in base.html")
                 return `<div class='fanfic-box'>
                     <div class='fanfic-box-left'>
                         <h3 class='fanfic-title'><a href="https://archiveofourown.org/works/${fanfic.fanfic_id}" target="_blank">${fanfic.title}</a></h3>
@@ -208,44 +191,10 @@
             }
 
             function sendFocus(id) {
-                //console.log("b4. in sendFocus(id) in base.html")
                 document.getElementById(id).focus()
             }
             
-            // function addResult(fanfic){
-            //     let resultBox = document.createElement('div');
-            //     resultBox.setAttribute('class', 'result-box');
-                
-            //     let resultTitle = document.createElement('h3');
-            //     resultTitle.textContent = fanfic.title;
-            //     resultTitle.setAttribute('class', 'result-title');
-            //     resultBox.appendChild(resultTitle);
-
-            //     let resultAuthor = document.createElement('p');
-            //     resultAuthor.textContent = fanfic.author;
-            //     resultAuthor.setAttribute('class', 'result-author');
-            //     resultBox.appendChild(resultAuthor);
-
-            //     let resultDescription = document.createElement('p');
-            //     resultDescription.textContent = fanfic.description;
-            //     resultDescription.setAttribute('class', 'result-description');
-            //     resultBox.appendChild(resultDescription);
-
-            //     let resultHits = document.createElement('p');
-            //     resultHits.textContent = fanfic.hits;
-            //     resultHits.setAttribute('class', 'result-hits');
-            //     resultBox.appendChild(resultHits);
-
-            //     let resultKudos = document.createElement('p');
-            //     resultKudos.textContent = fanfic.kudos;
-            //     resultKudos.setAttribute('class', 'result-kudos');
-            //     resultBox.appendChild(resultKudos);
-
-            //     return resultBox;     
-
-            // }
             function showResults() {
-                //console.log("b5. in showResults(title) in base.html")
                 document.getElementById("answer-box").innerHTML = "";
                 var w_title = document.getElementById('selected-title');
                 const slider = document.getElementById("size-slider");
@@ -257,8 +206,6 @@
 
                 fetch("/fanfic-recs/?" + new URLSearchParams({ title: w_title.textContent, popularity_slider: slider.value, tags: user_tags}).toString())
                     .then((response) => response.json())
-                    // console.log("1. fetched /fanfic-recs")
-
                     .then((data) => (data.length > 0) ? data.forEach(row => {
                         let result = document.createElement("div");
                         result.setAttribute('id', row.fanfic_id.toString());
@@ -273,7 +220,6 @@
                     xtra_info.remove();
                 }
                 else { // Query info
-                    console.log("Querying: " + fanfic_id.toString())
                     fetch("/inforeq?" + new URLSearchParams({ fanfic_id: fanfic_id }).toString())
                         .then((response) => response.json())
                         .then(data => data.forEach(row => {

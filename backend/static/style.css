@@ -262,9 +262,9 @@ label {
 
 #answer-box {
     display: flex;
-    margin-top: 50px;
+    margin-top: 20px;
     margin-left: 5%;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     overflow: scroll;
     flex-direction: column;
     justify-content: start;

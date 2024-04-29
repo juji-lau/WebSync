@@ -70,7 +70,6 @@ CORS(app)
 
 """ ========================= Backend stuff: ============================"""
 """ Global variable to store all the user's input tags"""
-# user_input_tags = []
 
 def json_search(query):
     """ Searches the webnovel database for a matching webnovel to the user typed query 
@@ -137,8 +136,6 @@ def recommendations():
     while len(results) < 10 and count <= 400:
         results = webnovel_to_top_fics(title, 100 + count, int(weight)/100)
         count += 50
- 
-    print(len(results))
     return results
 
 def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
@@ -155,12 +152,10 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
         - etc.
     """
     print("a3. In webnovel_to_top_fanfictions() app.py         No app.route()")
-    print("Popularity Weight: " + str(popularity_weight))
     webnovel_index = webnovel_title_to_index[webnovel_title]
     sorted_fanfics_tuplst = cossims[str(webnovel_index)]
     top_n = np.copy(sorted_fanfics_tuplst[:num_fics])
     max_pop = np.max(list(fic_popularities.values())) / 10
-    print(max_pop)
     for fic_tuple in top_n:
         fic_tuple[0] = fic_popularities[str(int(fic_tuple[1]))] / max_pop * popularity_weight + fic_tuple[0] * (1 - popularity_weight)
     top_n = sorted(top_n, key=lambda x: x[0], reverse=True)[:num_fics]
@@ -198,19 +193,12 @@ def getExtraFanficInfo(fanfic_id):
 @app.route("/")
 def home():
     print("a4. In home() in app.py          app.route(/)")
-    # print(novel_titles[0])
-    # session['title'] = novel_titles[0][0]
-    # session['title-index'] = 0
-    # session['tags'] = None
     return render_template('home.html', title="")
 
 @app.route("/results")
 def results():
     """ Called when the user clicks the --> arrow on the home page."""
     print("a5. In results() in app.py           app.route(/results)")
-    # session['tags'] = None
-    print(session)
-    print(request.args.get("title"))
     return render_template('base.html', webnovel_title=request.args.get("title"))
     
 
@@ -234,19 +222,6 @@ def descrSearch():
     text = request.args.get("inputText")
     return user_description_search(text)
 
-# @app.route("/setNovel")
-# def setNovel():
-#     """ 
-#     Returns the user selected wbenovel.
-#     Links to function titleButtonEventListener(e) in home.html 
-#     """
-#     print("a7. In setNovel() in app.py          app.route(/setNovel)")
-#     selectedNovel = request.args.get("title")
-#     session['title'] = request.args.get("title")
-#     session['title-index'] = novel_title_to_index[selectedNovel]
-#     returnDict = {'title': selectedNovel}
-#     return returnDict
-
 @app.route("/getNovel")
 def getNovel():
     """
@@ -263,7 +238,6 @@ def getNovel():
     }
     """
     print("a8. In getNovel() in app.py          app.route(/getNovel)")
-    # index = session['title-index']
 
     selectedNovel = request.args.get("title")
     index = novel_title_to_index[selectedNovel]
@@ -272,43 +246,6 @@ def getNovel():
                   'author':novel_data[index]['authors'][0],
                   'genres': novel_data[index]['genres']}
     return returnDict
-
-# @app.route("/addTag")
-# # whenever the user adds a tag, this is called
-# def addTag():
-#     """ Links to function addTag(e) in home.html"""
-#     print("a9. in addTag() in app.py            app.route(/addTag")
-#     newTag = request.args.get("tag")
-#     # If a user adds more than one tag, including empty tags
-#     if session.get('tags') != None:
-#         print("More than one tag added, including empty tags")
-#         session['tags'].append(newTag)
-#     # when the user adds the first tag, including empty tags
-#     else:
-#         session['tags'] = []
-#         print("First tag added")
-#         session['tags'].append(newTag)
-#     session.modified = True
-    
-#     user_input_tags.append(newTag)
-#     print("After ADDING, current tags", user_input_tags)
-#     return {'tags': newTag}
-#     return {}
-
-# @app.route("/removeTag")
-# def removeTags():
-#     """ Links to function addTag(e) in home.html """
-#     print("a10. in removeTags() in app.py().            app.route(/removeTag) ")
-#     tag = request.args.get("tag")
-#     print("Tag removed: ", tag)
-#     print("Current tags: ", session['tags'])
-#     session['tags'].remove(tag)
-#     print(session['tags'])
-#     session.modified = True
-#     user_input_tags.remove(tag)
-#     print("After removing, current tags", user_input_tags)
-#     return {'tags': tag}
-#     return {}
 
 @app.route("/inforeq")
 def getExtraInfo():
