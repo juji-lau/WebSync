@@ -14,10 +14,7 @@ from scipy.sparse.linalg import svds
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
 
-# Note: popularity score = (kudos * chapters) / hits
-# TODO: currently webnovel["title"] gives a list of associated webnovel titles\
-# right now, we are returning webnovel["title"][0].  Find a way to \
-# incorporate all associated titles
+
 """
 fic_id_to_index: maps the fanfiction id to a zero-based index. 
   fic_id_to_index[fanfic_id] = int
@@ -143,7 +140,10 @@ def tokenize_fanfics(tokenize_method: Callable[[str], List[str]],
         index_to_fic_id[counter] = fanfic_id
         
         # popularity = fanfic_dict['hits'] + fanfic_dict['kudos'] + fanfic_dict['comments'] + fanfic_dict['bookmarks']
-        popularity = (fanfic_dict['kudos'] * fanfic_dict['chapters'])/fanfic_dict['hits']
+        if fanfic_dict['hits'] > 0:
+            popularity = (fanfic_dict['kudos'] * fanfic_dict['chapters'])/fanfic_dict['hits']
+        else: 
+            popularity = 0
         fanfic_id_to_popularity[counter] = popularity
         
         counter+=1
@@ -316,14 +316,23 @@ def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> di
         Dictionary mapping from doc ID to the final accumulated score for that doc
     """
     doc_scores = {}
+    influential_words = {}
     for query_word in query_word_counts: 
         query_word_count = query_word_counts[query_word]
         for (doc, tf) in index[query_word]:
+            score = tf*idf[query_word]*query_word_count*idf[query_word]
             if doc not in doc_scores: 
-                doc_scores[doc] = tf*idf[query_word]*query_word_count*idf[query_word]
+                doc_scores[doc] = score
+                influential_words[doc] = [(query_word, score)]
             else:
-                doc_scores[doc] += tf*idf[query_word]*query_word_count*idf[query_word]
-    return doc_scores
+                doc_scores[doc] += score
+                influential_words[doc].append((query_word, score))
+
+    for doc in influential_words: 
+        influential_words[doc] = sorted(influential_words[doc], key=lambda x: x[1], reverse=True)[:5]
+        influential_words[doc] = [t[0] for t in influential_words[doc]]
+
+    return doc_scores, influential_words
 
 def compute_cossim_for_webnovel(
     webnovel_toks: Dict[str, str],
@@ -371,11 +380,11 @@ def compute_cossim_for_webnovel(
             del webnovel_word_counts[term]
     norms = math.sqrt(norm) * fanfic_norms
 
-    doc_scores = score_func(webnovel_word_counts, fanfic_inv_index, fanfic_idf)
+    doc_scores, influence_words = score_func(webnovel_word_counts, fanfic_inv_index, fanfic_idf)
 
     cossim = []
     for doc in doc_scores:
-        cossim.append((doc_scores[doc]/norms[doc], doc))
+        cossim.append((doc_scores[doc]/norms[doc], doc, influence_words[doc]))
 
     result = sorted(cossim, key=lambda x: x[0], reverse=True)[:50]
     return result
@@ -397,15 +406,16 @@ def build_sims_cos(webnovels_tokenized, fanfic_inv_index, fanfic_idf, fanfic_nor
     webnovel_sims: dict
         The key is a webnovel_index and the value is a ranked list of cosine similarity (cos sim score, fanfic_index)
     """
-    webnovel_sims = {} # key - webnovel id, value = list of sorted fanfics by similarity (cos sim score, fanfic index)
+    webnovel_sims_and_influential_words = {} # key - webnovel id, value = list of sorted fanfics by similarity (cos sim score, fanfic index)
+    webnovel_influential_words = {}
     n_webnovels = len(webnovels_tokenized)
 
     for i in tqdm(range(n_webnovels)):
         webnovel = webnovels_tokenized[i]
-        cossims = input_get_sims_method(webnovel['tokenized_description'], fanfic_inv_index, fanfic_idf, fanfic_norms, score_func)
-        webnovel_sims[webnovel['index']] = cossims
+        results = input_get_sims_method(webnovel['tokenized_description'], fanfic_inv_index, fanfic_idf, fanfic_norms, score_func)
+        webnovel_sims_and_influential_words[webnovel['index']] = results
 
-    return webnovel_sims
+    return webnovel_sims_and_influential_words
 
 def get_svd_tags(webnovel_data, fanfic_data, num_tags=235, sim_threshold=0.35, min_doc_frequency=0.005, max_doc_frequency=0.95, t_pattern="%", regex_t_pattern="[^%]+"):
     """
@@ -446,13 +456,13 @@ def get_svd_tags(webnovel_data, fanfic_data, num_tags=235, sim_threshold=0.35, m
         # make the list of tags into a single string
         tag_string = t_pattern.join(f["tags"])
         all_tags.append({"title": f["title"], "tags" : tag_string})
-    print("HII", all_tags[0]["tags"])
+    # print("HII", all_tags[0]["tags"])
 
     # make a tfidf matrix; dims = |works| x |tags|, where svd(i, j) = tf-idf score of tag j in work i
     vec = TfidfVectorizer(max_df = max_doc_frequency,
                             min_df = min_doc_frequency, stop_words='english', token_pattern=regex_t_pattern)
     td_matrix = vec.fit_transform([x["tags"] for x in all_tags]) 
-    print("TD MATRIX SHAPE", td_matrix.shape)
+    # print("TD MATRIX SHAPE", td_matrix.shape)
    # Get list of tags in tfidf:
    # tags = vec.get_feature_names_out()
     
@@ -468,8 +478,8 @@ def get_svd_tags(webnovel_data, fanfic_data, num_tags=235, sim_threshold=0.35, m
     # Get all the tags kept: 
     for i in range(0, num_tags):
         tags_list.append(index_to_word[i])
-    print(" Old taglist length: ", len(all_tags))
-    print("New tagslist length: ", len(tags_list))
+    # print(" Old taglist length: ", len(all_tags))
+    # print("New tagslist length: ", len(tags_list))
     return (tags_list, tags_compressed, works_compressed, s)
 
 def filter_fanfics(fanfics, tags_list):
@@ -487,30 +497,30 @@ def filter_fanfics(fanfics, tags_list):
     For all fanfic in filtered_fanfics, fanfic["tags"] must contain only strings 
     present in tags_list.
     """
-    print("FANFICS: ", fanfics)
+    # print("FANFICS: ", fanfics)
     filtered_fanfics = []
     tags_list = [tag.lower() for tag in tags_list]
     tags_set = set(tags_list)
     for fanfic in fanfics: 
         fanfic_tags_list = [tag.lower() for tag in fanfic["tags"]]
         fanfic_tags_set = set(fanfic_tags_list)
-        print("Current user tagset: ", tags_set)
-        print("FANFIC tags: ", fanfic_tags_set)
+        # print("Current user tagset: ", tags_set)
+        # print("FANFIC tags: ", fanfic_tags_set)
         if len(fanfic_tags_set.intersection(tags_set)) > 0:
             filtered_fanfics.append(fanfic)
-            print("ADDED!! ")
+            # print("ADDED!! ")
     return filtered_fanfics
 
 
 def main():
     fanfics = get_fanfic_data()
     webnovels = get_webnovel_data()
-    print("current fanfic length", len(fanfics), flush=True)
+    # print("current fanfic length", len(fanfics), flush=True)
     # Svd stuff: 
     tags_list, tags_compressed, works_compressed, s = get_svd_tags(webnovels, fanfics)
     fanfics = filter_fanfics(fanfics, tags_list)
-    print("TAGSSS!!! ", tags_list)
-    print("new fanfic length", len(fanfics), flush=True)
+    # print("TAGSSS!!! ", tags_list)
+    # print("new fanfic length", len(fanfics), flush=True)
 
     # plt.plot(s[::-1])
     # plt.xlabel("Singular value number")
@@ -527,16 +537,16 @@ def main():
     fanfic_idf = compute_idf(fanfic_inverted_index, n_fanfics)
     fanfic_norms = compute_doc_norms(fanfic_inverted_index, fanfic_idf, n_fanfics)
 
-    # Comment this when actually running
-    # cossims = build_sims_cos(webnovels_tokenized[:5], fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
+    # # Comment this when actually running
+    # cossims_and_influential_words = build_sims_cos(webnovels_tokenized[:5], fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
     # file = 'test.json'
 
     # Uncomment this when actually running
-    cossims = build_sims_cos(webnovels_tokenized, fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
+    cossims_and_influential_words = build_sims_cos(webnovels_tokenized, fanfic_inverted_index, fanfic_idf, fanfic_norms, accumulate_dot_scores, compute_cossim_for_webnovel)
     file = 'webnovel_to_fanfic_cossim.json'
 
     with open(file, 'w', encoding='utf-8') as f:
-        json.dump({'cossims':cossims, 'index_to_fanfic_id':index_to_fic_id, 'webnovel_title_to_index':webnovel_title_to_index, 'fanfic_id_to_popularity':fanfic_id_to_popularity, 'tags_list':tags_list}, f)
+        json.dump({'cossims_and_influential_words':cossims_and_influential_words, 'fic_id_to_index': fic_id_to_index, 'index_to_fanfic_id':index_to_fic_id, 'webnovel_title_to_index':webnovel_title_to_index, 'fanfic_id_to_popularity':fanfic_id_to_popularity, 'tags_list':tags_list}, f)
 
 
 if __name__ == "__main__":

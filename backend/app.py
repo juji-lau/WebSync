@@ -5,6 +5,7 @@ from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
 import numpy as np
+import copy
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -57,7 +58,7 @@ for file in fanfic_files:
 
 with open(cossim_json_file_path, 'r') as file: 
     file_contents = json.load(file)
-    cossims = file_contents['cossims']
+    cossims_and_influential_words = file_contents['cossims_and_influential_words']
     fic_popularities = file_contents['fanfic_id_to_popularity']
     webnovel_title_to_index = file_contents['webnovel_title_to_index']
     index_to_fanfic_id = file_contents['index_to_fanfic_id']
@@ -153,8 +154,9 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
     """
     print("a3. In webnovel_to_top_fanfictions() app.py         No app.route()")
     webnovel_index = webnovel_title_to_index[webnovel_title]
-    sorted_fanfics_tuplst = cossims[str(webnovel_index)]
-    top_n = np.copy(sorted_fanfics_tuplst[:num_fics])
+    sorted_fanfics_tuplst = cossims_and_influential_words[str(webnovel_index)]
+    # top_n = np.copy(sorted_fanfics_tuplst[:num_fics])
+    top_n = copy.deepcopy(sorted_fanfics_tuplst[:num_fics])
     max_pop = np.max(list(fic_popularities.values())) / 10
     for fic_tuple in top_n:
         fic_tuple[0] = fic_popularities[str(int(fic_tuple[1]))] / max_pop * popularity_weight + fic_tuple[0] * (1 - popularity_weight)
@@ -174,6 +176,7 @@ def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
         info_dict["kudos"] = fanfics[fanfic_id]["kudos"]                # get kudos
         info_dict["tags"] = fanfics[fanfic_id]["tags"]                  # get tags
         info_dict["score"] = round(top_n[count][0],4)
+        info_dict["influential_words"] = top_n[count][2]
         count += 1
         top_n_fanfics.append(info_dict)
     user_input_tags = request.args.get("tags").split(",")
