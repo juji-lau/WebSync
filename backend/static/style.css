@@ -274,6 +274,45 @@ label {
     text-align: center;
 }
 
+.keywords-box {
+    display: flex;
+    margin-top: 5px;
+    margin-bottom: 1px;
+    overflow-x: scroll; 
+    overflow-y: clip;
+    flex-direction: row;
+    justify-content: start;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+}
+
+.keyword-starter {
+    text-align: center;
+    font-size: small;
+    font-family: 'Kanit', sans-serif;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.keyword-token {
+    display: flex;
+    text-align: center;
+    flex-direction: row;
+    background-color: rgba(176, 105, 6, 0.135);
+    border: 1px solid black;
+    margin: 0px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+    border-radius: 15px;
+    font-family: 'Kanit', sans-serif;
+    color: rgb(41, 69, 69);
+    font-size: small;
+}
+
 .fanfic-box {
     text-align: start;
     background-color: rgba(0, 0, 0, 0.1);
@@ -293,6 +332,7 @@ label {
     transition: 0.4s;
     background-color: rgba(0, 0, 0, 0.3);
 }
+
 .fanfic-box-left {
     margin:0px;
     display: flex;
@@ -307,6 +347,7 @@ label {
     font-size: medium;
     margin:0px;
 }
+
 .fanfic-author {
     font-family: 'Kanit', sans-serif;
     color: darkslategray;
@@ -319,7 +360,10 @@ label {
     font-family: 'Montserrat', sans-serif;
     color: darkslategray;
     font-size: small;
-    margin:0px;
+    margin-left:0px;
+    margin-right:0px;
+    margin-top: 0px;
+    margin-bottom: 2px;
 }
 
 p {

@@ -149,6 +149,11 @@
 
 
             function answerBoxTemplate(fanfic) {
+                let influential_words_html = "<div class='keyword-starter'> Keywords </div>";
+                for (let i = 0; i < fanfic.influential_words.length; i++) {
+                    influential_words_html += "<div class='keyword-token'>" + fanfic.influential_words[i] + "</div>"
+                }
+
                 return `<div class='fanfic-box'>
                     <div class='fanfic-box-left'>
                         <h3 class='fanfic-title'><a href="https://archiveofourown.org/works/${fanfic.fanfic_id}" target="_blank">${fanfic.title}</a></h3>
@@ -160,7 +165,9 @@
                             <img class='small-image' src="{{ url_for('static', filename='images/thumbs-up.svg') }}"/>
                             <p class='fanfic-kudos'> ${fanfic.kudos}</p>
                         </div>
-                        <p class='fanfic-keywords'> Keywords: ${fanfic.influential_words}</p>
+                        <div class='keywords-box'>`
+                                + influential_words_html +
+                        `</div>
                     </div>
                     <div class='answer-button-display'>
                         <p class='fanfic-score'> Score: ${fanfic.score}</p>
@@ -193,6 +200,7 @@
             function sendFocus(id) {
                 document.getElementById(id).focus()
             }
+
             
             function showResults() {
                 document.getElementById("answer-box").innerHTML = "";
