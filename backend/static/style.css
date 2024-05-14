@@ -232,7 +232,7 @@ label {
     border-style: solid;
     border-width: 7px 0px 0px 3px;
     border-color: #717171;
-    overflow-y: scroll;
+    overflow-y: auto;
     box-shadow: inset 0 0 15px rgba(89, 46, 4, 0.75);
     background-image: url(https://media.istockphoto.com/id/1283615709/photo/old-brown-paper-parchment-background-design-with-distressed-vintage-stains-and-ink-spatter.jpg?b=1&s=612x612&w=0&k=20&c=dF3PPajNXtXXzoU4Qghwt9Yazu1KFNHuzmPWJ75eGCs=);
     background-size: cover;
@@ -265,7 +265,7 @@ label {
     margin-top: 20px;
     margin-left: 5%;
     margin-bottom: 20px;
-    overflow: scroll;
+    overflow: auto;
     flex-direction: column;
     justify-content: start;
     align-items: stretch;
@@ -278,7 +278,7 @@ label {
     display: flex;
     margin-top: 5px;
     margin-bottom: 1px;
-    overflow-x: scroll; 
+    overflow-x: auto; 
     overflow-y: clip;
     flex-direction: row;
     justify-content: start;
@@ -323,7 +323,8 @@ label {
     align-items: start;
     border: 1px solid black;
     padding: 15px;
-    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: clip;
     transition: 0.4s;
     width: 90%;
 }
@@ -438,7 +439,7 @@ p {
     40%, 100% {
       transform: rotateZ(0);
     }
-  }
+}
 
 .arrow {
     border-radius: 5px;
@@ -448,6 +449,7 @@ p {
     width: 40px;
     height: 40px;
     transition: 0.5s;
+    background-color: #906232c2;
 }
 
 .arrow:hover {
@@ -478,7 +480,8 @@ button:hover {
     align-items: start;
     text-align: center;
     border-style: solid;
-    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: clip;
     /* padding-left: 2.5%;
     padding-right: 2.5%; */
 
@@ -496,14 +499,14 @@ button:hover {
 .novel-info-group {
     box-sizing: border-box;
     width: 100%;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .horizontal {
     display: flex;
     gap: 10px;
     align-items: center;
-    overflow: scroll;
+    overflow: auto;
     margin: 0px;
 }
 
