@@ -19,3 +19,10 @@ build/
 *.egg-info/
 helpers/*
 json_template/
+
+# scratch work
+websync/scratch.py
+
+# Excess code
+websync/
+# environments
