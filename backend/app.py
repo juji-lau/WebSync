@@ -1,12 +1,12 @@
 import json
 import os
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
 import numpy as np
 import copy
-
+import logger
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
@@ -25,6 +25,9 @@ novel_json_file_path = os.path.join(current_directory, 'novel_info.json')
 
 cossim_json_file_path = os.path.join(current_directory, 'webnovel_to_fanfic_cossim.json')
 
+# setup logging
+file_logger = logger.get_logger()
+
 """========================== Gathering data: ============================="""
 def getKeyInfo(data,key):
     lst = []
@@ -38,6 +41,7 @@ def getTitleInfo(data):
         lst.append(data[i]['titles'][0])
     return lst
 
+# Get the webnovel information
 with open(novel_json_file_path, 'r') as file:
     novel_data = np.array(json.load(file))
     novel_titles = getKeyInfo(novel_data,'titles')
@@ -45,7 +49,8 @@ with open(novel_json_file_path, 'r') as file:
     novel_title_to_index = {}
     for i in range (len(novel_titles)):
         novel_title_to_index[novel_titles[i][0]] = i
-        
+
+# Get the processed fanfiction information and hold it in a variable
 fanfics = {}
 fanfic_files = ['fanfic_G_2019_processed-pg1.json', 'fanfic_G_2019_processed-pg2.json', 'fanfic_G_2019_processed-pg3.json']
 for file in fanfic_files:
@@ -56,6 +61,7 @@ for file in fanfic_files:
         for fanfic_info in temp_fanfic_list:
             fanfics[fanfic_info['id']] = fanfic_info
 
+# Get the cosine similarities between each webnovel and fanfiction
 with open(cossim_json_file_path, 'r') as file: 
     file_contents = json.load(file)
     cossims_and_influential_words = file_contents['cossims_and_influential_words']
@@ -73,18 +79,21 @@ CORS(app)
 """ Global variable to store all the user's input tags"""
 
 def json_search(query):
-    """ Searches the webnovel database for a matching webnovel to the user typed query 
-    using string matching.  
-    Called for every character typed in the search bar.
+    """ 
+    Searches the webnovel database for a matching webnovel based on user query.  
 
-    Argument(s):
-    query:str - what the user types when searching for a webnovel
+    Notes:
+        Uses string matching.
+        Called for every character typed in the search bar.
 
-    Return(s):
-    matches: [Dict{str: str}] - a list of matching webnovel dictionaries to the query. 
-        Each dictionary includes the webovel title and description currently.  
+    Args:
+        query (str): What the user types when searching for a webnovel
+
+    Returns:
+        matches (Dict{str: str}): A list of matching webnovel dictionaries to the query. 
+            Each dictionary includes the webovel title and description currently.  
     """
-    print("a1. In json_search(query) in app.py          No app.route()")
+    file_logger.info(f"Query so far: {query}")
     matches = []
     titles = set()
     for i in range (len(novel_titles)):
@@ -100,11 +109,11 @@ def user_description_search(user_description):
     Uses SVD and cosine similarity between a description inputted by the user and 
     each webnovel to find the five most similar webnovels. 
 
-    Argument(s):
-    user_description:str - the description typed by the user
+    Args:
+        user_description (str): the description typed by the user
 
-    Return(s):
-    match: Dict{str:str, str:str} - a dictionary with the webnovel that most matches the user description
+    Returns:
+        match (Dict[str:str, str:str]): A dictionary with the webnovel that most matches the user description
     """
     vectorizer = TfidfVectorizer()
     docs_tfidf = vectorizer.fit_transform(novel_descriptions)
@@ -126,33 +135,38 @@ def user_description_search(user_description):
 @app.route("/fanfic-recs/")
 def recommendations(): 
     """
-    Called when the user clicks "Show Reccommendations"
-    Links to showResults(title) in base.html
+    Gets the top 49 fanfiction recommendations based on the user's selected webnovel. 
+
+    Notes:
+        Called when the user clicks "Show Reccommendations"
+        Links to showResults(title) in base.html
     """
-    print("a2. In recomendations() app.py           app.route(/fanfic-recs/)")
+    file_logger.info(f"")
     title = request.args.get('title')
-    weight = request.args.get("popularity_slider")
-    results = webnovel_to_top_fics(title, 49, int(weight)/100)
-    count = 0
-    while len(results) < 10 and count <= 400:
-        results = webnovel_to_top_fics(title, 100 + count, int(weight)/100)
-        count += 50
+    raw_weight = float(request.args.get("popularity_slider"))
+    popularity_weight = raw_weight/100
+    # Get the first 49 recommendations based on cossine similarity
+    results = webnovel_to_top_fics(
+        webnovel_title = title, 
+        num_fics = 49, 
+        popularity_weight = popularity_weight
+    )
     return results
 
-def webnovel_to_top_fics(webnovel_title, num_fics, popularity_weight):
+def webnovel_to_top_fics(webnovel_title:str, popularity_weight:float, num_fics:int = 20) -> list[dict]:
     """
     Called when the user clicks "Show Recommendations"
-    inputs: 
-    webnovel_title --> the title of the user queried webnovel
-    num_fics: the number of results we output <50
-    outputs:
-    the top 10 fanfiction information. Can include: 
-        - fanfic_id
-        - fanfic_titles
-        - descriptions
-        - etc.
+
+    Args:
+        webnovel_title (str): The title of the user queried webnovel
+        popularity_weight (int): How important popularity is when recommending fanfics (0-100)
+        num_fics (int): the number of results we output <50
+
+    Returns:
+        (list[dict]): The top `num_fics` fanfictions that most closely match the user's selected webnovel.
+        Contains information on each fanfiction including: fanfic_id, fanfic_titles, descriptions
     """
-    print("a3. In webnovel_to_top_fanfictions() app.py         No app.route()")
+    file_logger.info(f"Title: {webnovel_title}, weight: {popularity_weight}, number of results: {num_fics}")
     webnovel_index = webnovel_title_to_index[webnovel_title]
     sorted_fanfics_tuplst = cossims_and_influential_words[str(webnovel_index)]
     # top_n = np.copy(sorted_fanfics_tuplst[:num_fics])
@@ -195,20 +209,27 @@ def getExtraFanficInfo(fanfic_id):
 
 @app.route("/")
 def home():
-    print("a4. In home() in app.py          app.route(/)")
+    """
+    Called when the user accesses the home page. (Either at the start or upon pressing "back")
+    """
+    file_logger.info(f"")
     return render_template('home.html', title="")
 
 @app.route("/results")
 def results():
-    """ Called when the user clicks the --> arrow on the home page."""
-    print("a5. In results() in app.py           app.route(/results)")
+    """
+    Displays the results page. 
+    Called when the user clicks the -> arrow to display the results after inputting a webnovel
+    """
+    file_logger.info(f"")
+    # print("a5. In results() in app.py           app.route(/results)")
     return render_template('base.html', webnovel_title=request.args.get("title"))
     
 
 @app.route("/titleSearch")
 def titleSearch():
     """
-    Gets the user typed query, and calls json_search to return relevant webnovels.
+    Gets the user typed query, and calls `json_search` to return relevant webnovels.
     Links to function filterText(id) in home.html.
     """
     print("a6. In titleSearch() in app.py.          app.route(/titleSearch)")
