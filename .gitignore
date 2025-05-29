@@ -20,8 +20,8 @@ build/
 helpers/*
 json_template/
 
-# scratch work
-websync/scratch.py
+# # scratch work
+# ./backend/scratch.py
 
 # Excess code
 websync/
