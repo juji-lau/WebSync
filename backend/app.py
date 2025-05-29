@@ -11,19 +11,16 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
 
-from scratch import edit_distance_search, filter_fanfics, get_svd_tags
+from scratch import filter_fanfics, get_svd_tags, edit_distance_search
 from scratch import insertion_cost, deletion_cost, substitution_cost
-# ROOT_PATH for linking with all your files. 
-# Feel free to use a config.py or settings.py with a global export variable
-os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 
-# Get the directory of the current script
-current_directory = os.path.dirname(os.path.abspath(__file__))
+# Get the directory of the dataset
+curr_dir = os.getcwd()
+data_dir = f"{os.path.dirname(curr_dir)}/dataset"
 
 # Specify the path to the JSON file relative to the current script
-novel_json_file_path = os.path.join(current_directory, 'novel_info.json')
-
-cossim_json_file_path = os.path.join(current_directory, 'webnovel_to_fanfic_cossim.json')
+novel_json_file_path = os.path.join(data_dir, 'novel_info.json')
+cossim_json_file_path = os.path.join(data_dir, 'webnovel_to_fanfic_cossim.json')
 
 # setup logging
 file_logger = logger.get_logger()
@@ -54,7 +51,7 @@ with open(novel_json_file_path, 'r') as file:
 fanfics = {}
 fanfic_files = ['fanfic_G_2019_processed-pg1.json', 'fanfic_G_2019_processed-pg2.json', 'fanfic_G_2019_processed-pg3.json']
 for file in fanfic_files:
-    file = os.path.join(current_directory, file)
+    file = os.path.join(data_dir, file)
     with open(file, 'r') as f: 
         temp_fanfic_list = json.load(f)
 
@@ -197,7 +194,7 @@ def webnovel_to_top_fics(webnovel_title:str, popularity_weight:float, num_fics:i
     if '' in user_input_tags:
         user_input_tags.remove('')
     
-    if len(user_input_tags) != 0:
+    if len(user_input_tags) > 0:
         top_n_fanfics = filter_fanfics(top_n_fanfics, user_input_tags)
     return top_n_fanfics
     
