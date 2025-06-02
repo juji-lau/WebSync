@@ -60,7 +60,8 @@ def get_fanfic_data():
     # files is a list of dictionaries.  List[Dict(fanfic_id, description)]
     files = ['fanfic_G_2019_processed-pg1.json', 'fanfic_G_2019_processed-pg2.json', 'fanfic_G_2019_processed-pg3.json']
     for file in files:
-        with open(file, 'r') as f:
+        filepath = f"../dataset/{file}"
+        with open(filepath, 'r') as f:
             fanfics = fanfics + json.load(f)
     return fanfics
 
@@ -84,7 +85,8 @@ def get_webnovel_data():
     # files is a list of dictionaries.  List[Dict(fanfic_id, description)]
     files = ['novel_info.json']
     for file in files:
-        with open(file, 'r') as f:
+        filepath = f"../dataset/{file}"
+        with open(filepath, 'r') as f:
             webnovels = webnovels + json.load(f)
     return webnovels
 
