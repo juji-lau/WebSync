@@ -1,19 +1,24 @@
 import matplotlib
 import numpy as np
+
 import matplotlib.pyplot as plt
-import scratch
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse.linalg import svds
 from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
 
+from preprocess import (
+    get_fanfic_data,
+    get_webnovel_data
+)
+
 # Decided not to use SVD to convert between webnovel to fanfic descriptions
 # It did not produce better results when compared with cosine similarity
 
 def main():
-    webnovels = scratch.get_webnovel_data()
-    fanfics = scratch.get_fanfic_data()
+    webnovels = get_webnovel_data()
+    fanfics = get_fanfic_data()
 
     webnovels_descs = []    # A list of description strings
     for webtok_dict in webnovels:

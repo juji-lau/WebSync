@@ -1,8 +1,17 @@
-from typing import List, Tuple, Dict
-from collections.abc import Callable
+"""
+Name: analysis.py
+Author: Juji Lau
+Description: 
+This file stores the functions for ranking and retrieving documents by relevance.
+
+Edit distance: For finding the webnovel title
+SVD analysis: For finding the webnovel by description
+Cosine Similarity: For ranking the fanfictions by similarity to each webnovel.
+"""
 import numpy as np
+from typing import Callable
 import math
-from collections import defaultdict, Counter
+from collections import Counter
 import json
 import re 
 from tqdm import tqdm
@@ -15,186 +24,24 @@ from scipy.sparse.linalg import svds
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
 
+from preprocess import (
+    get_fanfic_data, 
+    get_webnovel_data, 
+    tokenize_fanfics, 
+    tokenize_webnovels,
+    tokenize
+)
 
 # Set up logging for the file
 logging = logger.get_logger()
 
-""" ------------------------------ GETTING DATA ------------------------------------ """
-"""
-Constants that store data: 
-    fic_id_to_index (dict[fanfiction_id:int, index:int]): maps the fanfiction id to a zero-based index. 
-    webnovel_title_to_index (dict): 
-    index_to_fic_id (dict[index:int, fanfiction_id:int]): maps a zero-based index to the fanfiction id.
-"""
-fic_id_to_index = {}
-index_to_fic_id = {}
-webnovel_title_to_index = {}
-index_to_webnovel_title = {}
-fanfic_id_to_popularity = {}
-
-def get_fanfic_data():
-    """"
-    Gets the fanfic data in the form: 
-
-    [
-        {
-            "rating": "General Audiences", 
-            "hits": 3312, 
-            "kudos": 153, 
-            "description": "....", 
-            "language": "English", 
-            "title": "Those Kind of People", 
-            "tags": ["No Archive Warnings Apply", ...], 
-            "finished": "Finished", 
-            "chapters": 1, 
-            "authorName": "Psychsie", 
-            "comments": 12, 
-            "words": 6219, 
-            "date": "2019-03-31", 
-            "bookmarks": 12, 
-            "id": 4571955
-        }, ...
-    ]
-    """
-    fanfics = []
-    # files is a list of dictionaries.  List[Dict(fanfic_id, description)]
-    files = ['fanfic_G_2019_processed-pg1.json', 'fanfic_G_2019_processed-pg2.json', 'fanfic_G_2019_processed-pg3.json']
-    for file in files:
-        filepath = f"../dataset/{file}"
-        with open(filepath, 'r') as f:
-            fanfics = fanfics + json.load(f)
-    return fanfics
-
-def get_webnovel_data():
-    """"
-    Gets the webnovel data in the form: 
-
-    [
-        {
-            "titles": ["Title 1", "Title 2", ...], (List[str])
-            "original_lang": "English",           (str) 
-            "rank": 153,                          (int)
-            "description": "....",                (str)
-            "authors": ["author 1"],              (List[str])
-            "genres": ["Horror", ...],            (List[str])
-            "tags": ["Battle Competition", ...],  (List[str])
-        }, ...
-    ]
-    """
-    webnovels = []
-    # files is a list of dictionaries.  List[Dict(fanfic_id, description)]
-    files = ['novel_info.json']
-    for file in files:
-        filepath = f"../dataset/{file}"
-        with open(filepath, 'r') as f:
-            webnovels = webnovels + json.load(f)
-    return webnovels
-
-""" ------------------------------ PREPROCESSING ------------------------------------ """
-def tokenize(text: str) -> List[str]:
-    """Returns a list of words that make up the text.
-    
-    Note: for simplicity, lowercase everything.
-    Requirement: Use Regex to satisfy this function
-    
-    Parameters
-    ----------
-    text : str
-        The input string to be tokenized.
-
-    Returns
-    -------
-    List[str]
-        A list of strings representing the words in the text.
-    """
-    tokenized_with_stop_words = re.findall("[A-Za-z]+", text.lower())
-    tokenized = []
-    for token in tokenized_with_stop_words:
-        if token in stop_words: 
-            pass
-        else:
-            tokenized.append(token)
-    return tokenized
-
-# files is a list of dictionaries.  List[Dict(fanfic_id, description)]
-def tokenize_fanfics(tokenize_method: Callable[[str], List[str]], 
-    input_fanfics: List[Dict[str, str]], ) -> List[str]:
-    """Returns a list of tokens contained in an entire list of fanfics. 
-       Also builds fic_id_to_index{}.  
-
-    Parameters
-    ----------
-    tokenize_method : Callable[[str], List[str]]
-        A method to tokenize a string into a list of strings representing words.
-    input_fanfics : List[Dict[]].  See get_fanfic_data() for more info
-        A list of fanfiction dictionaries 
-        (specified as a dictionary with ``id``, ``description``, and other tags specified above).
-    
-    Returns
-    -------
-    List[Dict{fanfic_id:int, tokenized_description:List[str]}]
-        A list of dictionaries, where each dictionary is a single fanfiction, with an id and a tokenized description.
-    """
-    counter = 0
-    tokenized_descriptions = []
-    for fanfic_dict in input_fanfics:
-        fanfic_id = fanfic_dict['id']
-        fanfic_description = fanfic_dict['description']
-        tokenized_descriptions.append({"id":fanfic_id, "tokenized_description":tokenize_method(fanfic_description)})
-        
-        # add to fic_id_to_index, and index_to_fic_id:
-        fic_id_to_index[fanfic_id] = counter
-        index_to_fic_id[counter] = fanfic_id
-        
-        # popularity = fanfic_dict['hits'] + fanfic_dict['kudos'] + fanfic_dict['comments'] + fanfic_dict['bookmarks']
-        if fanfic_dict['hits'] > 0:
-            popularity = (fanfic_dict['kudos'] * fanfic_dict['chapters'])/fanfic_dict['hits']
-        else: 
-            popularity = 0
-        fanfic_id_to_popularity[counter] = popularity
-        
-        counter+=1
-    return tokenized_descriptions  
-
-def tokenize_webnovels(tokenize_method: Callable[[str], List[str]], 
-    input_webnovels: List[Dict[str, str]], ) -> List[str]:
-    """Returns a list of tokens contained in an entire list of webnovels. 
-      Creates an id mapping for webnovels, then populates: webnovel_title_to_index{} 
-      and index_to_webnovel_title{}  
-
-    Parameters
-    ----------
-    tokenize_method : Callable[[str], List[str]]
-        A method to tokenize a string into a list of strings representing words.
-    input_webnovels : List[Dict{}]  See get_webnovel_data() for more info.
-        A list of webnovel dictionaries 
-        (specified as a dictionary with ``title``, ``description``, and other tags specified above).
-
-    Returns
-    -------
-    List[Dict{webnovel_index : int, tokenized_descriptions:str}]
-        A list of dictionaries, where key == webnovel_index, and value == tokenized description
-        Note: the webnovel_index is an index, which can be mapped to the *first* title of the associated webnovel.
-    """
-    counter = 0
-    tokenized_descriptions = []
-    for webnovel_dict in input_webnovels:
-        webnovel_title = webnovel_dict['titles'][0]
-        webnovel_description = webnovel_dict['description']
-        tokenized_descriptions.append({"index":counter, "tokenized_description":tokenize_method(webnovel_description)})
-        webnovel_title_to_index[webnovel_title] = counter
-        index_to_webnovel_title[counter] = webnovel_title
-        counter+=1
-    return tokenized_descriptions    
-
-
 """ ------------------------------ FUCNTIONS TO RANKING ------------------------------------ """
-def build_inverted_index(msgs: List[dict]) -> dict:
+def build_inverted_index(msgs: list[dict]) -> dict:
     """Builds an inverted index from either webnovels or fanfics.
 
     Arguments
     =========
-    msgs: List[Dict{id:int, description:str}]
+    msgs: list[dict{id:int, description:str}]
         Each message in this list already has a 'tokenized_description'
         field that contains the tokenized message.
 
@@ -344,12 +191,12 @@ def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> di
     return doc_scores, influential_words
 
 def compute_cossim_for_webnovel(
-    webnovel_toks: Dict[str, str],
+    webnovel_toks: dict[str, str],
     fanfic_inv_index: dict,
     fanfic_idf,
     fanfic_norms,
     score_func = accumulate_dot_scores,
-) -> List[Tuple[int, int]]:
+) -> list[tuple[int, int]]:
     """Search the collection of documents for the given query
 
     Arguments
@@ -490,12 +337,12 @@ def filter_fanfics(fanfics, tags_list:list[str]):
     
     Arguments
     =========
-    fanfics: A list[Dict] of fanfictions in the same form returned by get_fanfic_data()
+    fanfics: A list[dict] of fanfictions in the same form returned by get_fanfic_data()
     tags_list: The list of tags to filter using.  Can be user entered.
 
     Returns: 
     ==========
-    filtered_fanfics: a list[Dict] of fanfictions in the same form as the input.  
+    filtered_fanfics: a list[dict] of fanfictions in the same form as the input.  
     For all fanfic in filtered_fanfics, fanfic["tags"] must contain only strings 
     present in tags_list.
     """
@@ -638,11 +485,12 @@ def edit_distance(
 
 def edit_distance_search(
     query: str,
-    msgs: List[List],
+    msgs: list[list],
     ins_cost_func: int,
     del_cost_func: int,
     sub_cost_func: int,
-) -> List[Tuple[int, str]]:
+) -> list[tuple[int, str]]:
+
     """Edit distance search
 
     Arguments
@@ -678,13 +526,13 @@ def edit_distance_search(
     # TODO-1.2
     lst_of_tups = []
     
-    #print(msgs[0])      # List of titles for a single webnovel
+    #print(msgs[0])      # list of titles for a single webnovel
     for webnov_title_lst in msgs:
-      webnovel_title = webnov_title_lst[0]
-      #novel_title_ind = webnovel_title_to_index[webnov_title_lst[0]]
-      #print("HERES THE INDEX", novel_title_ind)
-      score = edit_distance(query, webnovel_title, ins_cost_func, del_cost_func, sub_cost_func)
-      lst_of_tups.append((score, webnovel_title))
+        webnovel_title = webnov_title_lst[0]
+        #novel_title_ind = webnovel_title_to_index[webnov_title_lst[0]]
+        #print("HERES THE INDEX", novel_title_ind)
+        score = edit_distance(query, webnovel_title, ins_cost_func, del_cost_func, sub_cost_func)
+        lst_of_tups.append((score, webnovel_title))
 
     sort_lst = sorted(lst_of_tups, key = lambda x: x[0])[:10]
 

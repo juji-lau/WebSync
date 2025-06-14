@@ -11,8 +11,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
 
-from scratch import filter_fanfics, get_svd_tags, edit_distance_search
-from scratch import insertion_cost, deletion_cost, substitution_cost
+from analysis import get_svd_tags, edit_distance_search
+from analysis import insertion_cost, deletion_cost, substitution_cost, filter_fanfics
 
 # Get the directory of the dataset
 curr_dir = os.getcwd()
